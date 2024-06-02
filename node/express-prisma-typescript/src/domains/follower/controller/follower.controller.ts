@@ -22,3 +22,13 @@ followerRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
   
   return res.status(HttpStatus.OK).send()
 })
+
+followerRouter.post('/unfollow/:user_id', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  const followed = req.params.user_id;
+
+  await service.unfollow(userId, followed);
+  
+  return res.status(HttpStatus.OK).send()
+})

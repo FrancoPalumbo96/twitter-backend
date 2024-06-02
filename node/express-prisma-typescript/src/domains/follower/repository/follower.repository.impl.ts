@@ -7,20 +7,36 @@ export class FollowerRepositoryImpl implements FollowerRepository {
   constructor (private readonly db: PrismaClient) {}
   
   async follow (userId: string, followedId: string): Promise<FollowerDTO> {
-    const follower = await this.db.follow.create({
+    const follow = await this.db.follow.create({
       data: {
         followerId: userId,
-        followedId: followedId
+        followedId: followedId,
+        deletedAt: null
       }
     })
-    return new FollowerDTO(follower)
+    return new FollowerDTO({...follow, deletedAt: undefined})
+  }
+
+  async updateFollow (userId: string, followedId: string): Promise<void> {
+    await this.db.follow.updateMany({
+      where: {
+            followerId: userId,
+            followedId: followedId
+          },
+      data: {
+        deletedAt: null
+      }
+    })
   }
 
   async unfollow (userId: string, followedId: string):  Promise<void> {
-    await this.db.follow.deleteMany({
+    await this.db.follow.updateMany({
       where: {
-        followerId: userId,
-        followedId: followedId
+            followerId: userId,
+            followedId: followedId
+          },
+      data: {
+        deletedAt: new Date()
       }
     })
   }
@@ -33,7 +49,9 @@ export class FollowerRepositoryImpl implements FollowerRepository {
       }
     })
 
-    return (follow != null) ? new FollowerDTO(follow) : null
+    let deleteAt = follow?.deletedAt ?? undefined;
+
+    return (follow != null) ? new FollowerDTO({...follow, deletedAt: deleteAt}) : null
   }
 
   async getUserById (userId: string): Promise<UserDTO | null> {
