@@ -43,24 +43,26 @@ export class PostRepositoryImpl implements PostRepository {
 
       where: {
         OR: [
-          // {
-          //   // Posts from public users
-          //   author: {
-          //     privateUser: false
-          //   }
-          // },
           {
-            // Posts from followed users
+            // Posts from public users
             author: {
-              follows: {
+              privateUser: false,
+              deletedAt: null
+            }
+          },
+          {
+            // Posts from private users that are followed by userId
+            author: {
+              followers: {
                 some: {
-                  followerId: userId
+                  followerId: userId,
+                  deletedAt: null
                 }
               }
             }
           }
         ],
-        deletedAt: null // Optional: exclude soft-deleted posts
+        deletedAt: null
       },
       include: {
         author: true // Include author details if needed
