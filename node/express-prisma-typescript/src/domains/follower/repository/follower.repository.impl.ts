@@ -54,6 +54,23 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     return (follow != null) ? new FollowerDTO({...follow, deletedAt: deleteAt}) : null
   }
 
+  async getAllFollowers (userId: string): Promise<FollowerDTO[]> {
+    const follows = await this.db.follow.findMany({
+      where: {
+        followerId: userId,
+        deletedAt: null
+      }
+    })
+
+    // Convert each Follow object to FollowerDTO
+    const followsDTOs = follows.map(follow => {
+      let deleteAt = follow?.deletedAt ?? undefined;
+      return new FollowerDTO({...follow, deletedAt: deleteAt})
+    });
+
+    return (followsDTOs != null) ? followsDTOs : []
+  }
+
   async getUserById (userId: string): Promise<UserDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
@@ -62,4 +79,6 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     })
     return user ? new UserDTO(user) : null
   }
+
+  
 }

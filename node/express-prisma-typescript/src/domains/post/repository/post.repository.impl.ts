@@ -35,6 +35,49 @@ export class PostRepositoryImpl implements PostRepository {
     return posts.map(post => new PostDTO(post))
   }
 
+  async getAllAvailable (options: CursorPagination, userId: string): Promise<PostDTO[]> {
+    const posts = await this.db.post.findMany({
+      cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
+
+      where: {
+        OR: [
+          // {
+          //   // Posts from public users
+          //   author: {
+          //     privateUser: false
+          //   }
+          // },
+          {
+            // Posts from followed users
+            author: {
+              follows: {
+                some: {
+                  followerId: userId
+                }
+              }
+            }
+          }
+        ],
+        deletedAt: null // Optional: exclude soft-deleted posts
+      },
+      include: {
+        author: true // Include author details if needed
+      },
+
+      orderBy: [
+        {
+          createdAt: 'desc'
+        },
+        {
+          id: 'asc'
+        }
+      ]
+    })
+    return posts.map(post => new PostDTO(post))
+  }
+
   async delete (postId: string): Promise<void> {
     await this.db.post.delete({
       where: {

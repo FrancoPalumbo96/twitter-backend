@@ -7,4 +7,5 @@ export interface FollowerRepository {
   unfollow: (userId: string, followedId: string) => Promise<void>
   get: (userId: string, followedId: string) => Promise<FollowerDTO | null>
   getUserById: (userId: string) => Promise<UserDTO | null>
+  getAllFollowers: (userId: string) => Promise<FollowerDTO[]>
 }
