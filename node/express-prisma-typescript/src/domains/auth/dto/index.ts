@@ -31,7 +31,7 @@ export class SignupInputDTO {
     this.email = email
     this.password = password
     this.username = username
-    this.name = name ?? username; 
+    this.name = name || username; 
     this.privateUser = privateUser ?? false
   }
 }

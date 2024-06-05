@@ -12,6 +12,7 @@ export class CreatePostInputDTO {
     images?: string[]
 }
 
+//Single Parameter as an Object
 export class PostDTO {
   constructor (post: PostDTO) {
     this.id = post.id
