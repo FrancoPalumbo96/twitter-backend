@@ -15,10 +15,15 @@ export class AuthServiceImpl implements AuthService {
   constructor (private readonly repository: UserRepository) {}
 
   async signup (data: SignupInputDTO): Promise<TokenDTO> {
+    
     const existingUser = await this.repository.getByEmailOrUsername(data.email, data.username)
     if (existingUser) throw new ConflictException('USER_ALREADY_EXISTS')
 
     const encryptedPassword = await encryptPassword(data.password)
+
+    //Set name property
+    if(!data.name)
+      data.name = data.username
 
     const user = await this.repository.create({ ...data, password: encryptedPassword })
     const token = generateAccessToken({ userId: user.id })

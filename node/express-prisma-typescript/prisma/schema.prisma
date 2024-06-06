@@ -23,6 +23,7 @@ model User {
   name     String? @db.VarChar(35) // Limit display name to 35 characters
   email    String  @unique // Unique constraint
   password String
+  privateUser Boolean @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -45,6 +46,8 @@ model Follow {
 
   follower User @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade) // One to many
   followed User @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade) // One to many
+
+  @@unique([followerId, followedId]) // Unique Pair constraint
 }
 
 model Post {
