@@ -26,36 +26,13 @@ router.use('/health', healthRouter)
  * /api/auth/signup:
  *   post:
  *     summary: Sign up a new user
- *     description: Creates a new user and returns an authentication token.
+ *     description: Creates a new user account and returns an authentication token.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             SignupInputDTO:
- *              type: object
- *              required:
- *                  - email
- *                  - username
- *                  - password
- *              properties:
- *                  email:
- *                      type: string
- *                      description: Email of the user
- *                      example: user@example.com
- *                      format: email
- *                  username:
- *                      type: string
- *                      description: Username of the user
- *                      example: pedro_96
- *                  password:
- *                      type: string
- *                      description: Password of the user
- *                      example: Strong_Password_00
- *                  name:
- *                      type: string
- *                      description: Name of the user
- *                      example: Pedro
+ *             $ref: '#/components/schemas/SignupInputDTO'
  *     responses:
  *       201:
  *         description: User created successfully
@@ -68,6 +45,8 @@ router.use('/health', healthRouter)
  *                   type: string
  *       409:
  *         description: Conflict, user already exists
+ * 
+ *          
  * /api/auth/login:
  *   post:
  *     summary: Log in an existing user
@@ -77,7 +56,8 @@ router.use('/health', healthRouter)
  *       content:
  *         application/json:
  *           schema:
- *             
+ *             $ref: '#/components/schemas/LoginInputDTO'
+ *                 
  *     responses:
  *       200:
  *         description: User authenticated successfully
@@ -88,8 +68,8 @@ router.use('/health', healthRouter)
  *               properties:
  *                 token:
  *                   type: string
- *       401:
- *         description: Unauthorized, invalid credentials
+ *       404:
+ *         description: User not found
  */
 router.use('/auth', authRouter)
 
