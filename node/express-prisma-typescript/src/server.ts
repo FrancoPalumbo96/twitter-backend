@@ -8,13 +8,13 @@ import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 
 //Swagger
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 import swaggerOptions from '@utils/swagger'
 
 const app = express()
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+const swaggerSpec = swaggerJsdoc(swaggerOptions)
 
 // Set up request logger
 if (Constants.NODE_ENV === NodeEnv.DEV) {

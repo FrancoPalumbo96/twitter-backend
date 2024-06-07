@@ -18,11 +18,13 @@ export class FollowerRepositoryImpl implements FollowerRepository {
   }
 
   async updateFollow (userId: string, followedId: string): Promise<void> {
-    await this.db.follow.updateMany({
+    await this.db.follow.update({
       where: {
-            followerId: userId,
-            followedId: followedId
-          },
+        followerId_followedId: {
+          followerId: userId,
+          followedId: followedId
+        }
+      },
       data: {
         deletedAt: null
       }
@@ -30,11 +32,13 @@ export class FollowerRepositoryImpl implements FollowerRepository {
   }
 
   async unfollow (userId: string, followedId: string):  Promise<void> {
-    await this.db.follow.updateMany({
+    await this.db.follow.update({
       where: {
-            followerId: userId,
-            followedId: followedId
-          },
+        followerId_followedId: {
+          followerId: userId,
+          followedId: followedId
+        }
+      },
       data: {
         deletedAt: new Date()
       }
@@ -42,10 +46,12 @@ export class FollowerRepositoryImpl implements FollowerRepository {
   }
 
   async get (userId: string, followedId: string): Promise<FollowerDTO | null> {
-    const follow = await this.db.follow.findFirst({
+    const follow = await this.db.follow.findUnique({
       where: {
-        followerId: userId,
-        followedId: followedId
+        followerId_followedId: {
+          followerId: userId,
+          followedId: followedId
+        }
       }
     })
 
