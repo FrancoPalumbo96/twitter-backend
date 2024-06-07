@@ -9,12 +9,18 @@ import { followerRouter } from '@domains/follower/controller'
 
 export const router = Router()
 
+//TODO fix bearer token
+//TODO add deletes
+//TODO make it workable
+
 /**
  * @swagger
  * /api/health:
  *   get:
  *     summary: Health Check
  *     description: Returns status 200 OK to indicate the service is up and running.
+ *     tags:
+ *       - Health  
  *     responses:
  *       200:
  *         description: Service is up and running
@@ -27,6 +33,8 @@ router.use('/health', healthRouter)
  *   post:
  *     summary: Sign up a new user
  *     description: Creates a new user account and returns an authentication token.
+ *     tags:
+ *       - Auth  
  *     requestBody:
  *       required: true
  *       content:
@@ -51,6 +59,8 @@ router.use('/health', healthRouter)
  *   post:
  *     summary: Log in an existing user
  *     description: Authenticates a user and returns an authentication token.
+ *     tags:
+ *       - Auth   
  *     requestBody:
  *       required: true
  *       content:
@@ -69,11 +79,158 @@ router.use('/health', healthRouter)
  *                 token:
  *                   type: string
  *       404:
- *         description: User not found
+ *          description: User not found
+ *                          
  */
 router.use('/auth', authRouter)
 
-
+/**
+ * @swagger
+ * components:
+ *  securitySchemes:
+ *    BearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ * /api/user:
+ *   get:
+ *     summary: Get all users
+ *     description: Returns recommended users paginated
+ *     tags:
+ *       - User  
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns Users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       createdAt:
+ *                         type: Date
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ * 
+ * 
+ * /api/user/me:
+ *   get:
+ *     summary: Get current user
+ *     description: Returns the information of the currently authenticated user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns current user 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 createdAt:
+ *                   type: Date
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ * 
+ * /api/user/{user_id}:
+ *   get:
+ *     summary: Get user by ID
+ *     description: Returns the user by their Id
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the user to retrieve 
+ *     responses:
+ *       200:
+ *         description: Returns User
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 createdAt:
+ *                   type: Date
+ *       401:
+ *         description: Unauthorized. You must login to access this content   
+ *                   
+ */
 router.use('/user', withAuth, userRouter)
+
+
+
+/**
+ * @swagger
+ * /api/post:
+ *   get:
+ *     summary: Get available posts
+ *     description: Returns paginated posts from public users or users followed by the current user
+ *     tags:
+ *       - Post
+ *     responses:
+ *       200:
+ *         description: A list of paginated posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PostDTO'
+ *       401:
+ *         description: Unauthorized. You must login to access this content 
+ * 
+ * 
+ * /api/post/{post_id}:
+ *   get: 
+ *     summary: 
+ *     description: returns a post by id when user follows the post_id user or the post_id user is public
+ *     tags:
+ *       - Post
+ *     parameters:
+ *       - in: path
+ *         name: post_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the post
+ *     responses:
+ *       200:
+ *         description: The post with post id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PostDTO' 
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Error invalida post id   
+ *                  
+ */
 router.use('/post', withAuth, postRouter)
+
+
 router.use('/follower', withAuth, followerRouter)
