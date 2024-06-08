@@ -286,7 +286,7 @@ router.use('/user', withAuth, userRouter)
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreatePostInputDTO'
+ *             $ref: '#/components/schemas/PostDTO'
  *     responses:
  *       201:
  *         description: Post created successfully
