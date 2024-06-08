@@ -15,6 +15,14 @@ export const router = Router()
 
 /**
  * @swagger
+ * components:
+ *  securitySchemes:
+ *    BearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ * 
+ * 
  * /api/health:
  *   get:
  *     summary: Health Check
@@ -86,12 +94,8 @@ router.use('/auth', authRouter)
 
 /**
  * @swagger
- * components:
- *  securitySchemes:
- *    BearerAuth:
- *      type: http
- *      scheme: bearer
- *      bearerFormat: JWT
+ * 
+ * 
  * /api/user:
  *   get:
  *     summary: Get all users
@@ -148,12 +152,15 @@ router.use('/auth', authRouter)
  *       401:
  *         description: Unauthorized. You must login to access this content
  * 
+ * 
  * /api/user/{user_id}:
  *   get:
  *     summary: Get user by ID
  *     description: Returns the user by their Id
  *     tags:
  *       - User
+ *     security:
+ *       - BearerAuth: [] 
  *     parameters:
  *       - in: path
  *         name: user_id
@@ -188,9 +195,11 @@ router.use('/user', withAuth, userRouter)
  * /api/post:
  *   get:
  *     summary: Get available posts
- *     description: Returns paginated posts from public users or users followed by the current user
+ *     description: Returns paginated posts from public users or users followed by the authenticated user
  *     tags:
  *       - Post
+ *     security:
+ *       - BearerAuth: [] 
  *     responses:
  *       200:
  *         description: A list of paginated posts
@@ -207,9 +216,11 @@ router.use('/user', withAuth, userRouter)
  * /api/post/{post_id}:
  *   get: 
  *     summary: 
- *     description: returns a post by id when user follows the post_id user or the post_id user is public
+ *     description: returns a post by id when authenticated user follows the post_id user or the post_id user is public
  *     tags:
  *       - Post
+ *     security:
+ *       - bearerAuth: [] 
  *     parameters:
  *       - in: path
  *         name: post_id
@@ -227,10 +238,148 @@ router.use('/user', withAuth, userRouter)
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
- *         description: Error invalida post id   
+ *         description: Error invalida post id
+ * 
+ * 
+ * /api/posts/by_user/{userId}:
+ *   get:
+ *     summary: Get posts by user
+ *     description: Returns all posts by a specific user, visible to the authenticated user
+ *     tags:
+ *       - Post
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the user whose posts are to be retrieved
+ *     responses:
+ *       200:
+ *         description: Posts retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PostDTO'
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: User not found
+ * 
+ * 
+ * /api/posts:
+ *   post:
+ *     summary: Create a new post
+ *     description: Creates a new post for the authenticated user
+ *     tags:
+ *       - Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreatePostInputDTO'
+ *     responses:
+ *       201:
+ *         description: Post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PostDTO'
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ * 
+ * 
+ * /api/posts/{postId}:
+ *   delete:
+ *     summary: Delete a post
+ *     description: Deletes a post by Id for the authenticated user
+ *     tags:
+ *       - Post
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the post to delete
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Post not found   
  *                  
  */
 router.use('/post', withAuth, postRouter)
 
 
+/**
+ * @swagger
+ * /api/followers/follow/{user_id}:
+ *   post:
+ *     summary: Follow a user
+ *     description: Allows the authenticated user to follow another user
+ *     tags:
+ *       - Follower
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the user to follow
+ *     responses:
+ *       200:
+ *         description: Followed user successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: User not found
+ * 
+ * 
+ * /api/followers/unfollow/{user_id}:
+ *   post:
+ *     summary: Unfollow a user
+ *     description: Allows the authenticated user to unfollow another user
+ *     tags:
+ *       - Follower
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Id of the user to unfollow
+ *     responses:
+ *       200:
+ *         description: Unfollowed user successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: User not found
+ * 
+ * 
+ * 
+ * 
+ */
 router.use('/follower', withAuth, followerRouter)

@@ -41,6 +41,9 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
+//TODO
+//Fix error 500 find unique when user_id is incorrect (should return a 404)
+
 app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)
 })
