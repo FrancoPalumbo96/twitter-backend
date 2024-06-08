@@ -7,7 +7,14 @@ import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 
+//Swagger
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import swaggerOptions from '@utils/swagger'
+
 const app = express()
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions)
 
 // Set up request logger
 if (Constants.NODE_ENV === NodeEnv.DEV) {
@@ -19,6 +26,7 @@ app.use(express.json()) // Parses application/json payloads request bodies
 app.use(express.urlencoded({ extended: false })) // Parse application/x-www-form-urlencoded request bodies
 app.use(cookieParser()) // Parse cookies
 
+
 // Set up CORS
 app.use(
   cors({
@@ -26,9 +34,15 @@ app.use(
   })
 )
 
+// Set up Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use('/api', router)
 
 app.use(ErrorHandling)
+
+//TODO
+//Fix error 500 find unique when user_id is incorrect (should return a 404)
 
 app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)

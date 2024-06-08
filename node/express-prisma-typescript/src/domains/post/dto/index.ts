@@ -13,6 +13,25 @@ export class CreatePostInputDTO {
 }
 
 //Single Parameter as an Object
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     PostDTO:
+ *       type: object
+ *       required:
+ *         - content
+ *       properties:
+ *         images:
+ *           type: string[]
+ *           description: The post image
+ *           example: ...
+ *         content:
+ *           type: string
+ *           description: post content
+ *           example: This is a post! 
+ */
 export class PostDTO {
   constructor (post: PostDTO) {
     this.id = post.id
