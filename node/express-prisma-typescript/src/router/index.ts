@@ -6,6 +6,7 @@ import { postRouter } from '@domains/post'
 import { authRouter } from '@domains/auth'
 import { healthRouter } from '@domains/health'
 import { followerRouter } from '@domains/follower/controller'
+import { reactionRouter } from '@domains/reaction'
 
 export const router = Router()
 
@@ -383,3 +384,5 @@ router.use('/post', withAuth, postRouter)
  * 
  */
 router.use('/follower', withAuth, followerRouter)
+
+router.use('/reaction', withAuth, reactionRouter)
