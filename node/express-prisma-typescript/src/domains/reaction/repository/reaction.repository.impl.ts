@@ -28,10 +28,26 @@ export class ReactionRepositoryImpl implements ReactionRepository {
   }
   
   async get(userId: string): Promise<ReactionDTO[]>;
-  async get(userId: string, postId: string): Promise<ReactionDTO[]>;
   async get(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO>;
-  async get(userId: string, postId?: string, type?: ReactionType): Promise<ReactionDTO | ReactionDTO[]> {
-    if (postId && type) {
+  async get(userId: string, reactionId: string): Promise<ReactionDTO>
+  async get(userId: string, postId?: string, type?: ReactionType, reactionId?: string): Promise<ReactionDTO | ReactionDTO[]> {
+    
+    //TODO simplify and add restriction based on usedId
+    if (reactionId){
+      // Implementation for fetching a specific reaction by reactionId
+      const reaction = await this.db.reaction.findUnique({
+        where: {
+          id: reactionId
+        },
+      });
+
+      if (!reaction) {
+        throw new Error('Reaction not found');
+      }
+
+      return new ReactionDTO({...reaction, deletedAt: undefined});
+    }
+    else if (postId && type) {
       // Implementation for fetching a specific reaction by userId, postId, and type
       const reaction = await this.db.reaction.findUnique({
         where: {

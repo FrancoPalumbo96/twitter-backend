@@ -6,6 +6,6 @@ export interface ReactionRepository {
     unreact: (userId: string, postId: string, type: ReactionType) => Promise<void>
     
     get(userId: string): Promise<ReactionDTO[]>
-    get(userId: string, postId: string): Promise<ReactionDTO[]>
+    get(userId: string, reactionId: string): Promise<ReactionDTO>
     get(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO>
 }
