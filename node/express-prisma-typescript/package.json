@@ -10,9 +10,12 @@
     "lint": "eslint --fix && pretty-quick && prisma format",
     "db:migrate": "prisma migrate deploy",
     "db:make-migrations": "prisma migrate dev",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "seed": "ts-node src/utils/seed.ts",
+    "db:clean": "ts-node src/utils/dbcleaner.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@prisma/client": "^4.9.0",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
