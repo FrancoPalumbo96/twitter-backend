@@ -8,6 +8,8 @@ import { healthRouter } from '@domains/health'
 import { followerRouter } from '@domains/follower'
 import { reactionRouter } from '@domains/reaction'
 import { commentRouter } from '@domains/comment'
+import { likeRouter } from '@domains/like'
+import { retweetRouter } from '@domains/retweet'
 
 export const router = Router()
 
@@ -389,3 +391,8 @@ router.use('/follower', withAuth, followerRouter)
 router.use('/reaction', withAuth, reactionRouter)
 
 router.use('/comment', withAuth, commentRouter)
+
+router.use('/like', withAuth, likeRouter)
+
+router.use('/retweet', withAuth, retweetRouter)
+
