@@ -18,7 +18,7 @@ commentRouter.get('/getAll/:user_id', async (req: Request, res: Response) => {
 
   const authId = req.params.user_id;
 
-  await service.get(userId, authId);
+  const comments = await service.get(userId, authId);
 
-  return res.status(HttpStatus.OK).send()
+  return res.status(HttpStatus.OK).send(comments)
 })
