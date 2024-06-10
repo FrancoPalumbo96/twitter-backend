@@ -28,7 +28,7 @@ followerRouter.post('/unfollow/:user_id', async (req: Request, res: Response) =>
 
   const followed = req.params.user_id;
 
-  await service.unfollow(userId, followed);
+  await service.unfollow(userId, followed)
   
   return res.status(HttpStatus.OK).send()
 })
