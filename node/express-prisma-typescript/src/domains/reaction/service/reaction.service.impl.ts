@@ -9,10 +9,22 @@ export class ReactionServiceImpl implements ReactionService {
 
   async react (userId: string, postId: string, type: string): Promise<ReactionDTO> {
     const reactionType = this.castReactionType(type);
+
     if(!reactionType)
       throw new ConflictException('Reaction type does not exist')
 
-    return await this.repository.react(userId, postId, reactionType);
+    const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType)
+
+    if(reaction){
+      if(!reaction.deletedAt){
+        throw new ConflictException(`Cannot ${reaction.type} twice that post`)
+      }
+
+      //TODO Test
+      return await this.repository.react(userId, postId, reactionType, true);
+    } else {
+      return await this.repository.react(userId, postId, reactionType);
+    }    
   }
 
   async unreact (userId: string, postId: string, type: string): Promise<void> {

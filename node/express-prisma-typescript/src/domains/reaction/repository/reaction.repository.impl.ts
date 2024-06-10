@@ -6,25 +6,48 @@ import { ReactionRepository } from "./reaction.repository";
 export class ReactionRepositoryImpl implements ReactionRepository {
   constructor (private readonly db: PrismaClient) {}
 
-  async react(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO> {
-    const reaction = await this.db.reaction.create({
-      data: {
-        userId,
-        postId,
-        type,
-      },
-    });
+  async react(userId: string, postId: string, type: ReactionType, update = false): Promise<ReactionDTO> {
+    let reaction
+    
+    if(update){
+      reaction = await this.db.reaction.update({
+        where: {
+          unique_user_post_reaction: {
+            userId: userId,
+            postId: postId,
+            type: type
+          }
+        },
+        data: {
+          deletedAt: null
+        }
+      })
+    } else {
+      reaction = await this.db.reaction.create({
+        data: {
+          userId,
+          postId,
+          type,
+        },
+      })
+    }
+    
     return new ReactionDTO({...reaction, deletedAt: undefined});
   }
 
   async unreact(userId: string, postId: string, type: ReactionType): Promise<void> {
-    await this.db.reaction.deleteMany({
+    await this.db.reaction.update({
       where: {
-        userId,
-        postId,
-        type,
+        unique_user_post_reaction: {
+          userId: userId,
+          postId: postId,
+          type: type
+        }
       },
-    });
+      data: {
+        deletedAt: new Date()
+      }
+    })
   }
   
   async get(userId: string): Promise<ReactionDTO[]>;
@@ -49,7 +72,9 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         throw new Error('Reaction not found');
       }
 
-      return new ReactionDTO({...reaction, deletedAt: undefined});
+      let deleteAt = reaction?.deletedAt ?? undefined;
+
+      return new ReactionDTO({...reaction, deletedAt: deleteAt});
 
     } else if (postId) {
       // Implementation for fetching reactions by userId and postId
@@ -60,7 +85,10 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         },
       });
 
-      return reactions.map(reaction => new ReactionDTO({...reaction, deletedAt: undefined}));
+      return reactions.map(reaction => {
+        let deleteAt = reaction?.deletedAt ?? undefined;
+        return new ReactionDTO({...reaction, deletedAt: deleteAt})
+      });
 
     } else {
       // Implementation for fetching reactions by userId
@@ -70,7 +98,10 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         },
       });
 
-      return reactions.map(reaction => new ReactionDTO({...reaction, deletedAt: undefined}));
+      return reactions.map(reaction => {
+        let deleteAt = reaction?.deletedAt ?? undefined;
+        return new ReactionDTO({...reaction, deletedAt: deleteAt})
+      });
     }
   }
 }
