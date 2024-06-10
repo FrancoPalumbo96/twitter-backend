@@ -51,11 +51,14 @@ model Follow {
   @@unique([followerId, followedId]) // Unique Pair constraint
 }
 
+//commentedOnPostId String   @db.Uuid // Post it comments in Foreign Key
+
 model Post {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
 
   authorId String   @db.Uuid // Foreign Key
   content  String   @db.VarChar(240) // Limit the content to 240 characters
+  
   images   String[]
 
   createdAt DateTime  @default(now())
@@ -63,6 +66,12 @@ model Post {
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
+  // Self-referential relation for comments
+  parentId String? @db.Uuid // optional field that stores the Id of the parent post (the post being commented on).
+  parent Post? @relation("PostComments", fields: [parentId], references: [id])
+  comments Post[] @relation("PostComments")
+
   reactions Reaction[]
 }
 

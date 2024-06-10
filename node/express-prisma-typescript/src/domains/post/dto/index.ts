@@ -10,6 +10,10 @@ export class CreatePostInputDTO {
   @IsOptional()
   @MaxLength(4)
     images?: string[]
+  
+  @IsString()
+  @IsOptional()
+    parentId?: string
 }
 
 //Single Parameter as an Object
@@ -31,6 +35,11 @@ export class CreatePostInputDTO {
  *           type: string
  *           description: post content
  *           example: This is a post! 
+ *         parentId:
+ *           type: string
+ *           description: optional field that stores the Id of the parent post (the post being commented on).
+ *           example: 34275a9b-b076-4b41-90e7-fcd72fd27b84
+ *             
  */
 export class PostDTO {
   constructor (post: PostDTO) {
@@ -39,6 +48,8 @@ export class PostDTO {
     this.content = post.content
     this.images = post.images
     this.createdAt = post.createdAt
+   
+    this.parentId = post.parentId
   }
 
   id: string
@@ -46,6 +57,7 @@ export class PostDTO {
   content: string
   images: string[]
   createdAt: Date
+  parentId?: string | null //Added null option else would not work
 }
 
 export class ExtendedPostDTO extends PostDTO {
