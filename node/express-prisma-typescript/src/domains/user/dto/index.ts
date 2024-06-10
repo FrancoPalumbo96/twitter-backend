@@ -1,13 +1,17 @@
+//TODO change from USerDTO to UserViewDTO
+
 export class UserDTO {
   constructor (user: UserDTO) {
     this.id = user.id
     this.name = user.name
     this.createdAt = user.createdAt
+    this.profilePicture = user.profilePicture
   }
 
   id: string
   name: string | null
   createdAt: Date
+  profilePicture?: string | null
 }
 
 export class ExtendedUserDTO extends UserDTO {
@@ -22,6 +26,7 @@ export class ExtendedUserDTO extends UserDTO {
   username!: string
   password!: string
 }
+
 export class UserViewDTO {
   constructor (user: UserViewDTO) {
     this.id = user.id
