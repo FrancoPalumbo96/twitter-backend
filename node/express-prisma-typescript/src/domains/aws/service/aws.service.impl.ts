@@ -1,6 +1,7 @@
 import { AwsService } from "./aws.service";
-import { NotFoundException, ConflictException, ValidationException } from '@utils'
+import { NotFoundException, ConflictException, ValidationException, Constants } from '@utils'
 import AWS from 'aws-sdk';
+
 
 export class AwsServiceImpl implements AwsService {
   constructor(private readonly s3: AWS.S3){}
@@ -9,9 +10,11 @@ export class AwsServiceImpl implements AwsService {
     const key = `profile-images/${userId}/${Date.now()}.jpg`;
 
     const params = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: Constants.S3_BUCKET_NAME,
       Key: key,
       Expires: 3600,
+      ContentType: 'image/jpeg',
+      ACL: 'public-read' //The owner gets full control. Anyone can read the object.
     };
 
     return new Promise((resolve, reject) => {
@@ -22,15 +25,6 @@ export class AwsServiceImpl implements AwsService {
         resolve({ url, key });
       });
     });
-
-    // this.s3.getSignedUrl('putObject', params, (err, url) => {
-    //   if (err) {
-    //     throw new ConflictException('Error generating pre-signed URL')
-    //   }
-
-    //   return 
-    //   res.json({ url, key });
-    // });
   }
 
   //TODO

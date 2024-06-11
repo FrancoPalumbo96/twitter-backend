@@ -382,10 +382,6 @@ router.use('/post', withAuth, postRouter)
  *         description: Unauthorized
  *       500:
  *         description: User not found
- * 
- * 
- * 
- * 
  */
 router.use('/follower', withAuth, followerRouter)
 
