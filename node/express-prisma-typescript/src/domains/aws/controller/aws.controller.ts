@@ -16,37 +16,22 @@ AWS.config.update({
   region: process.env.AWS_REGION
 });
 
-awsRouter.get('/presigned-url', async (req: Request, res: Response) => {
-  const { userId } = res.locals.context;
+awsRouter.get('/presigned_url', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const contentType  = req.headers['content-type']
+
+  console.log(contentType)
+
+  if (!contentType || (contentType !== 'image/jpeg' && contentType !== 'image/png')) {
+    return res.status(400).json({ error: 'Invalid content type' })
+  }
 
   try {
-    const { url, key } = await service.saveProfilePicture(userId);
-    return res.status(HttpStatus.CREATED).json({ url, key });
+    const { url, key } = await service.saveProfilePicture(userId, contentType as string);
+    return res.status(HttpStatus.CREATED).json({ url, key })
   } catch (error) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error generating pre-signed URL' });
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error generating pre-signed URL' })
   }
 })
 
-// awsRouter.get('/presigned-url', (req: Request, res: Response) => {
-//   const key = req.query.key as string;
-//   if (!key) {
-//     return res.status(400).json({ error: 'Key is required' });
-//   }
-
-//   const params = {
-//     Bucket: process.env.S3_BUCKET_NAME,
-//     Key: key,
-//     Expires: 3600,
-//   };
-
-//   //TODO move to Service
-
-//   s3.getSignedUrl('putObject', params, (err, url) => {
-//     if (err) {
-//       return res.status(500).json({ error: 'Error generating pre-signed URL' });
-//     }
-//     res.json({ url });
-//   });
-// });
-
-export default awsRouter;
+export default awsRouter
