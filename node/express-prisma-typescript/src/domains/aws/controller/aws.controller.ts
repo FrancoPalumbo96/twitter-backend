@@ -16,11 +16,10 @@ AWS.config.update({
   region: process.env.AWS_REGION
 });
 
-awsRouter.get('/presigned_url', async (req: Request, res: Response) => {
+awsRouter.post('/presigned_profile_url', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const contentType  = req.headers['content-type']
-
-  console.log(contentType)
+  //const contentType  = req.headers['content-type']
+  const { contentType } = req.body
 
   if (!contentType || (contentType !== 'image/jpeg' && contentType !== 'image/png')) {
     return res.status(400).json({ error: 'Invalid content type' })
@@ -29,6 +28,23 @@ awsRouter.get('/presigned_url', async (req: Request, res: Response) => {
   try {
     const { url, key } = await service.saveProfilePicture(userId, contentType as string);
     return res.status(HttpStatus.CREATED).json({ url, key })
+  } catch (error) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error generating pre-signed URL' })
+  }
+})
+
+awsRouter.post('/presigned_post_url', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  //const contentType  = req.headers['content-type']
+  const { quantity, contentType } = req.body
+
+  if (!contentType || (contentType !== 'image/jpeg' && contentType !== 'image/png')) {
+    return res.status(400).json({ error: 'Invalid content type' })
+  }
+
+  try {
+    const { urls, keys } = await service.savePostPictures(userId, contentType as string, quantity);
+    return res.status(HttpStatus.CREATED).json({ urls, keys })
   } catch (error) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error generating pre-signed URL' })
   }

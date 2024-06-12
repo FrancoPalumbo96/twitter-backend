@@ -8,7 +8,7 @@ export class AwsServiceImpl implements AwsService {
 
   async saveProfilePicture (userId: string, contentType: string) : Promise<{ url: string; key: string }> {
     const extension = contentType.split('/')[1]
-    const key = `profile-images/${userId}/profile.${extension}`
+    const key = `profile_images/${userId}/profile.${extension}`
     //const key = `profile-images/${userId}/${Date.now()}.jpg`;
 
     const params = {
@@ -29,8 +29,36 @@ export class AwsServiceImpl implements AwsService {
     })
   }
 
-  //TODO
-  async savePostPicture (userId: string) : Promise<{ url: string; key: string }> {
-    return {url: '', key: ''}
+  async savePostPictures(userId: string, contentType: string, quantity: number): Promise<{ urls: string[]; keys: string[] }> {
+    let urls: string[] = []
+    let keys: string[] = []
+
+    const extension = contentType.split('/')[1]
+  
+    for (let i = 0; i < quantity; i++) {
+      const key = `post_images/${userId}/${Date.now()}_${i}.${extension}`
+  
+      const params = {
+        Bucket: Constants.S3_BUCKET_NAME,
+        Key: key,
+        Expires: 3600,
+        ContentType: contentType,
+        //ACL: 'public-read' // Consider adding ACL if needed
+      }
+  
+      const url = await new Promise<string>((resolve, reject) => {
+        this.s3.getSignedUrl('putObject', params, (err, url) => {
+          if (err) {
+            reject(err)
+          }
+          resolve(url)
+        })
+      })
+  
+      urls.push(url)
+      keys.push(key)
+    }
+  
+    return { urls, keys };
   }
 }
