@@ -83,7 +83,6 @@ export class AwsServiceImpl implements AwsService {
     }
   }
 
-  //TODO
   async getPostsKeys(userId: string, postId: string): Promise<string[]> {
     const prefix = `post_images/${userId}/${postId}`
 
@@ -93,9 +92,9 @@ export class AwsServiceImpl implements AwsService {
     }
 
     try {
-      const data = await this.s3.listObjectsV2(params).promise() // Fetch list of objects matching the prefix
+      const data = await this.s3.listObjectsV2(params).promise() 
       
-      // Extract the keys from the fetched objects
+      
       const keys = data.Contents?.map(object => object.Key) || []
     
       // Filter out undefined keys and return the array
