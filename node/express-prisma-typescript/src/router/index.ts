@@ -10,6 +10,7 @@ import { reactionRouter } from '@domains/reaction'
 import { commentRouter } from '@domains/comment'
 import { likeRouter } from '@domains/like'
 import { retweetRouter } from '@domains/retweet'
+import { awsRouter } from '@domains/aws'
 
 export const router = Router()
 
@@ -381,10 +382,6 @@ router.use('/post', withAuth, postRouter)
  *         description: Unauthorized
  *       500:
  *         description: User not found
- * 
- * 
- * 
- * 
  */
 router.use('/follower', withAuth, followerRouter)
 
@@ -395,4 +392,6 @@ router.use('/comment', withAuth, commentRouter)
 router.use('/like', withAuth, likeRouter)
 
 router.use('/retweet', withAuth, retweetRouter)
+
+router.use('/aws', withAuth, awsRouter)
 

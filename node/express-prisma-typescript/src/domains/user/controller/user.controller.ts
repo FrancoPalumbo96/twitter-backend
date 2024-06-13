@@ -8,10 +8,13 @@ import { db } from '@utils'
 import { UserRepositoryImpl } from '../repository'
 import { UserService, UserServiceImpl } from '../service'
 
+import { AwsServiceImpl } from '@domains/aws/service'
+import AWS from 'aws-sdk'
+
 export const userRouter = Router()
 
 // Use dependency injection
-const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
+const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db), new AwsServiceImpl(new AWS.S3()))
 
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -26,6 +29,8 @@ userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
   const user = await service.getUser(userId)
+
+  console.log("User: " + JSON.stringify(user))
 
   return res.status(HttpStatus.OK).json(user)
 })

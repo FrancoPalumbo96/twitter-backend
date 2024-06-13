@@ -28,4 +28,7 @@ export class Constants {
 
   // Authentication secret
   static TOKEN_SECRET: string = process.env.TOKEN_SECRET ?? 'secret'
+
+  // AWS constants
+  static S3_BUCKET_NAME: string = process.env.S3_BUCKET_NAME ?? 'PEPE'
 }
