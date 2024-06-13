@@ -8,11 +8,12 @@ const prisma = new PrismaClient();
 async function main() {
   // Create mock users
   for (let i = 0; i < 5; i++) {
-    const name = faker.internet.userName();
+    const username = faker.internet.userName();
+    const name = username.length >= 5 ? username.slice(0, 5) : username;
     const hashedPassword = await bcrypt.hash('Strong_Password_00', 10);
     const user = await prisma.user.create({
       data: {
-        username: name,
+        username: username,
         name: name,
         email: faker.internet.email(),
         password: hashedPassword,
@@ -24,7 +25,7 @@ async function main() {
     const post = await prisma.post.create({
       data: {
         authorId: user.id,
-        content: `This is a Post from ${name}`,
+        content: `This is a Post from ${username}`,
       },
     });
 
