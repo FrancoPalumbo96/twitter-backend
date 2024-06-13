@@ -9,7 +9,6 @@ export class AwsServiceImpl implements AwsService {
   async saveProfilePicture (userId: string, contentType: string) : Promise<{ url: string; key: string }> {
     const extension = contentType.split('/')[1]
     const key = `profile_images/${userId}/profile.${extension}`
-    //const key = `profile-images/${userId}/${Date.now()}.jpg`;
 
     const params = {
       Bucket: Constants.S3_BUCKET_NAME,
@@ -29,14 +28,14 @@ export class AwsServiceImpl implements AwsService {
     })
   }
 
-  async savePostPictures(userId: string, contentType: string, quantity: number): Promise<{ urls: string[]; keys: string[] }> {
+  async savePostPictures(userId: string, contentType: string, postId: string, quantity: number): Promise<{ urls: string[]; keys: string[] }> {
     let urls: string[] = []
     let keys: string[] = []
 
     const extension = contentType.split('/')[1]
   
     for (let i = 0; i < quantity; i++) {
-      const key = `post_images/${userId}/${Date.now()}_${i}.${extension}`
+      const key = `post_images/${userId}/${postId}/${i}.${extension}`
   
       const params = {
         Bucket: Constants.S3_BUCKET_NAME,
@@ -60,5 +59,50 @@ export class AwsServiceImpl implements AwsService {
     }
   
     return { urls, keys };
+  }
+
+  async getProfileKey(userId: string): Promise<string> {
+    const prefix = `profile_images/${userId}`
+
+    const params = {
+      Bucket: Constants.S3_BUCKET_NAME,
+      Prefix: prefix
+    }
+
+    try {
+      const data = await this.s3.listObjectsV2(params).promise()
+      const profileImage = data.Contents?.find(object => object.Key?.startsWith(`${prefix}`))
+
+      if (profileImage && profileImage.Key) {
+        return profileImage.Key
+      } else {
+        throw new Error('Profile image not found')
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  //TODO
+  async getPostsKeys(userId: string, postId: string): Promise<string[]> {
+    const prefix = `post_images/${userId}/${postId}`
+
+    const params = {
+      Bucket: Constants.S3_BUCKET_NAME,
+      Prefix: prefix
+    }
+
+    try {
+      const data = await this.s3.listObjectsV2(params).promise() // Fetch list of objects matching the prefix
+      
+      // Extract the keys from the fetched objects
+      const keys = data.Contents?.map(object => object.Key) || []
+    
+      // Filter out undefined keys and return the array
+      return keys.filter(key => key !== undefined) as string[]
+    } catch (error) {
+      console.error('Error fetching post image keys:', error)
+      throw error
+    }
   }
 }

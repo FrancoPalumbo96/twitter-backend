@@ -36,18 +36,37 @@ awsRouter.post('/presigned_profile_url', async (req: Request, res: Response) => 
 awsRouter.post('/presigned_post_url', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   //const contentType  = req.headers['content-type']
-  const { quantity, contentType } = req.body
+  const { quantity, contentType, postId } = req.body
 
   if (!contentType || (contentType !== 'image/jpeg' && contentType !== 'image/png')) {
     return res.status(400).json({ error: 'Invalid content type' })
   }
 
   try {
-    const { urls, keys } = await service.savePostPictures(userId, contentType as string, quantity);
+    const { urls, keys } = await service.savePostPictures(userId, contentType as string, postId, quantity);
     return res.status(HttpStatus.CREATED).json({ urls, keys })
   } catch (error) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error generating pre-signed URL' })
   }
+})
+
+awsRouter.get('/get', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  const key = await service.getProfileKey(userId)
+
+  return res.status(HttpStatus.CREATED).json(key)
+})
+
+awsRouter.get('/get/:post_id', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { post_id: postId } = req.params
+
+  console.log(postId)
+
+  const keys = await service.getPostsKeys(userId, postId)
+
+  return res.status(HttpStatus.CREATED).json(keys)
 })
 
 export default awsRouter
