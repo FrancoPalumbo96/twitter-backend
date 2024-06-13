@@ -30,8 +30,6 @@ userRouter.get('/me', async (req: Request, res: Response) => {
 
   const user = await service.getUser(userId)
 
-  console.log("User: " + JSON.stringify(user))
-
   return res.status(HttpStatus.OK).json(user)
 })
 

@@ -62,8 +62,6 @@ awsRouter.get('/get/:post_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { post_id: postId } = req.params
 
-  console.log(postId)
-
   const keys = await service.getPostsKeys(userId, postId)
 
   return res.status(HttpStatus.CREATED).json(keys)

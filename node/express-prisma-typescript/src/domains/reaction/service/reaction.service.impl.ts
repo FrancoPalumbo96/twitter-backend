@@ -42,8 +42,6 @@ export class ReactionServiceImpl implements ReactionService {
   }
 
   castReactionType(type: string): ReactionType | null {
-    console.log(type)
-    console.log(typeof type)
     const lowercaseType: string = type.toLocaleLowerCase();
     if(lowercaseType === '0' || lowercaseType === 'like'){
       return ReactionType.LIKE

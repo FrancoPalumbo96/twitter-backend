@@ -1,6 +1,6 @@
 import { NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
-import { UserDTO, UserViewDTO } from '../dto'
+import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { AwsService } from '@domains/aws/service'
@@ -16,16 +16,28 @@ export class UserServiceImpl implements UserService {
     try{
       const profileKey = await this.awsService.getProfileKey(userId)
 
-      return {...user, profilePicture: profileKey}
+      return new UserViewDTO({id: user.id, name: user.name, username: user.username, profilePicture: profileKey})
     } catch (error) {
-      return {...user, profilePicture: null}
+      return new UserViewDTO({id: user.id, name: user.name, username: user.username, profilePicture: null})
     }
   }
 
-  //TODO search for profile images
-  async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserDTO[]> {
-    // TODO: make this return only users followed by users the original user follows
-    return await this.repository.getRecommendedUsersPaginated(options)
+  async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
+    
+    const users = await this.repository.getRecommendedUsersPaginated(userId, options)
+
+    const usersWithProfilePictures = await Promise.all(
+      users.map(async (user) => {
+        try {
+          const profileKey = await this.awsService.getProfileKey(user.id)
+          return new UserViewDTO({id: user.id, name: user.name, username: user.username, profilePicture: profileKey})
+        } catch (error) {
+          return new UserViewDTO({id: user.id, name: user.name, username: user.username, profilePicture: null})
+        }
+      })
+    );
+
+    return usersWithProfilePictures;
   }
 
   async deleteUser (userId: any): Promise<void> {

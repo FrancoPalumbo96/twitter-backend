@@ -1,5 +1,3 @@
-//TODO change from USerDTO to UserViewDTO
-
 export class UserDTO {
   constructor (user: UserDTO) {
     this.id = user.id
