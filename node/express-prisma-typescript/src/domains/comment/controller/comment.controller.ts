@@ -13,12 +13,22 @@ export const commentRouter = Router()
 // Use dependency injection
 const service: CommentService = new CommentServiceImpl(new CommentRepositoryImpl(db))
 
-commentRouter.get('/getAll/:user_id', async (req: Request, res: Response) => {
+commentRouter.get('/byUser/:user_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
   const authId = req.params.user_id;
 
   const comments = await service.get(userId, authId);
+
+  return res.status(HttpStatus.OK).send(comments)
+})
+
+commentRouter.get('/byPost/:post_id', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  const postId = req.params.post_id;
+ 
+  const comments = await service.getByPostId(userId, postId)
 
   return res.status(HttpStatus.OK).send(comments)
 })

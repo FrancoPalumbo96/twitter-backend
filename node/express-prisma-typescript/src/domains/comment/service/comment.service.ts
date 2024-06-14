@@ -1,5 +1,6 @@
-import { PostDTO } from "@domains/post/dto";
+import { ExtendedPostDTO, PostDTO } from "@domains/post/dto";
 
 export interface CommentService {
   get: (userId: string, authorId: string) => Promise<PostDTO[]>
+  getByPostId: (userId: string, postId: string) => Promise<ExtendedPostDTO[]>
 }
