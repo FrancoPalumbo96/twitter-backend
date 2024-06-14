@@ -33,8 +33,8 @@ userRouter.get('/me', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user)
 })
 
-userRouter.get('/:userId', async (req: Request, res: Response) => {
-  const { userId: otherUserId } = req.params
+userRouter.get('/:user_id', async (req: Request, res: Response) => {
+  const { user_id: otherUserId } = req.params
 
   const user = await service.getUser(otherUserId)
 
