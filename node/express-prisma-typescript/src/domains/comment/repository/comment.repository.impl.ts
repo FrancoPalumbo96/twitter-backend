@@ -3,6 +3,7 @@ import { CommentRepository } from './comment.repository'
 import { PrismaClient } from '@prisma/client';
 import { NotFoundException } from '@utils'
 import { ExtendedUserDTO } from '@domains/user/dto';
+import { CursorPagination } from '@types';
 
 export class CommentRepositoryImpl implements CommentRepository {
   constructor(private readonly db: PrismaClient){}
@@ -47,7 +48,7 @@ export class CommentRepositoryImpl implements CommentRepository {
     return comments.map(comment => new PostDTO(comment))
   }
 
-  async getByPostId (userId: string, postId: string): Promise<ExtendedPostDTO[]> {
+  async getByPostId (userId: string, postId: string, cursorPagination: CursorPagination): Promise<ExtendedPostDTO[]> {
     const originalPost = await this.db.post.findFirst({
       where: {
         id: postId,
@@ -84,9 +85,19 @@ export class CommentRepositoryImpl implements CommentRepository {
       throw new NotFoundException('Post does not exists') //original post was deleted
     }
 
+    const { limit, before, after } = cursorPagination;
+    let paginationConditions: any = {};
+    if (before) {
+      paginationConditions.id = { lt: before }; //less than
+    }
+    if (after) {
+      paginationConditions.id = { gt: after }; //greater than
+    }
+
     const commentsInPostAndReactions = await this.db.post.findMany({
       where: {
         parentId: postId, //parentId is the original post 
+        ...paginationConditions, //Pagination conditions
       },
       include: {
         _count: {
@@ -103,6 +114,7 @@ export class CommentRepositoryImpl implements CommentRepository {
           _count: 'desc', //Sort by number of reactions
         },
       },
+      take: limit,
     })
 
     //sorted by reactions
