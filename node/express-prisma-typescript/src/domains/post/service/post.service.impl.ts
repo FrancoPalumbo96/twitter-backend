@@ -34,7 +34,7 @@ export class PostServiceImpl implements PostService {
     return posts
   }
 
-  async getPostsByAuthor (userId: string, authorId: string): Promise<PostDTO[]> {
+  async getPostsByAuthor (userId: string, authorId: string): Promise<ExtendedPostDTO[]> {
     // TODO: throw exception when the author has a private profile and the user doesn't follow them
     return await this.repository.getByAuthorId(authorId, userId)
   }

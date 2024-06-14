@@ -25,6 +25,7 @@ export class PostRepositoryImpl implements PostRepository {
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
 
       where: {
+        parentId: null,
         OR: [
           {
             // Posts from public users
@@ -47,6 +48,7 @@ export class PostRepositoryImpl implements PostRepository {
         ],
         deletedAt: null
       },
+
       include: {
         _count: {
           select: {
@@ -74,19 +76,12 @@ export class PostRepositoryImpl implements PostRepository {
     })
   }
 
-  async delete (postId: string): Promise<void> {
-    await this.db.post.delete({
-      where: {
-        id: postId
-      }
-    })
-  }
-
+ 
   async getById (postId: string, userId: string): Promise<PostDTO | null> {
-
     const post = await this.db.post.findFirst({
       where: {
         id: postId,
+        parentId: null,
         OR: [
           {
             // Author is not a private user
@@ -119,10 +114,11 @@ export class PostRepositoryImpl implements PostRepository {
     return (post != null) ? new PostDTO(post) : null
   }
 
-  async getByAuthorId (authorId: string, userId: string): Promise<PostDTO[]> {
+  async getByAuthorId (authorId: string, userId: string): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       where: {
         authorId: authorId,
+        parentId: null,
         OR: [
           {
             // Author is not a private user
@@ -149,8 +145,31 @@ export class PostRepositoryImpl implements PostRepository {
             }
           }
         ]
+      },
+
+      include: {
+        _count: {
+          select: {
+            reactions: true, //can be removed
+            comments: true,
+          },
+        },
+        reactions: true, //Add reactons for filtering
+        author: true 
       }
     })
-    return posts.map(post => new PostDTO(post))
+    return posts.map(post => {
+      const likeCount = post.reactions.filter(reaction => reaction.type === 'LIKE').length;
+      const retweetCount = post.reactions.filter(reaction => reaction.type === 'RETWEET').length;
+      return new ExtendedPostDTO({...post, qtyComments: post._count.comments, qtyLikes: likeCount, qtyRetweets: retweetCount })
+    })
+  }
+
+  async delete (postId: string): Promise<void> {
+    await this.db.post.delete({
+      where: {
+        id: postId
+      }
+    })
   }
 }
