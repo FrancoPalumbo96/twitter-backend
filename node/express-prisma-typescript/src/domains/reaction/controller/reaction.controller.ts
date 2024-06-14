@@ -15,7 +15,6 @@ export const reactionRouter = Router()
 const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db))
 
 
-//TODO add a ReactionInputDTO
 reactionRouter.post('/:post_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 

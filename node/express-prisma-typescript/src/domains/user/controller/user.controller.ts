@@ -8,13 +8,10 @@ import { db } from '@utils'
 import { UserRepositoryImpl } from '../repository'
 import { UserService, UserServiceImpl } from '../service'
 
-import { AwsServiceImpl } from '@domains/aws/service'
-import AWS from 'aws-sdk'
-
 export const userRouter = Router()
 
 // Use dependency injection
-const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db), new AwsServiceImpl(new AWS.S3()))
+const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
 
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -48,6 +45,22 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
   const users = await service.getByUsernamePrefix(userId, usernamePrefix)
 
   return res.status(HttpStatus.OK).json(users)
+})
+
+userRouter.post('/update_profile_picture', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { key } = req.body
+
+  if (!key) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Missing key in request body' });
+  }
+
+  try {
+    await service.updateProfilePicture(userId, key);
+    return res.status(HttpStatus.OK).json({ message: 'Profile picture updated successfully' });
+  } catch (error) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error updating profile picture' });
+  }
 })
 
 userRouter.delete('/', async (req: Request, res: Response) => {

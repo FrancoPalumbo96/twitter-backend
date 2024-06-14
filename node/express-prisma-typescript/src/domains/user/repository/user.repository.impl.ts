@@ -13,6 +13,26 @@ export class UserRepositoryImpl implements UserRepository {
     }).then(user => new UserDTO(user))
   }
 
+  async updateProfilePicture (userId: string, key: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        profilePicture: key
+      }
+    })
+  }
+
+  async delete (userId: any): Promise<void> {
+    await this.db.user.delete({
+      where: {
+        id: userId
+      }
+    })
+  }
+
+
   async getById (userId: any): Promise<UserViewDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
@@ -22,16 +42,8 @@ export class UserRepositoryImpl implements UserRepository {
 
     const userName = user ? (user.name ?? user.username) : '';
 
-    //TODO add profile picture
-    return user ? new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null}) : null
-  }
-
-  async delete (userId: any): Promise<void> {
-    await this.db.user.delete({
-      where: {
-        id: userId
-      }
-    })
+    
+    return user ? new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: user.profilePicture}) : null
   }
 
   async getRecommendedUsersPaginated (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
@@ -68,8 +80,8 @@ export class UserRepositoryImpl implements UserRepository {
 
     return users.map(user => {
       const userName = user ? (user.name ?? user.username) : '';
-      //TODO add profile picture  
-      return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null})
+      
+      return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: user.profilePicture})
     })
   }
 
@@ -121,8 +133,8 @@ export class UserRepositoryImpl implements UserRepository {
 
     return users.map(user => {
       const userName = user ? (user.name ?? user.username) : '';
-      //TODO add profile picture
-      return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null})
+      
+      return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: user.profilePicture})
     })
   }
 }

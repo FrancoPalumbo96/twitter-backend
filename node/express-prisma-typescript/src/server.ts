@@ -42,7 +42,10 @@ app.use('/api', router)
 app.use(ErrorHandling)
 
 //TODO
+//Add missing delete routes
 //Fix error 500 find unique when user_id is incorrect (should return a 404)
+//Check all routes happy path
+//Complete all todos
 
 app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)
