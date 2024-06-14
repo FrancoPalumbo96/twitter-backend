@@ -1,4 +1,4 @@
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -28,8 +28,8 @@ export class PostServiceImpl implements PostService {
     return post
   }
 
-  async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    let posts: PostDTO[] = await this.repository.getAllAvailable(options, userId)
+  async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    let posts: ExtendedPostDTO[] = await this.repository.getAllAvailable(options, userId)
 
     return posts
   }

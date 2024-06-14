@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -18,7 +18,7 @@ export class PostRepositoryImpl implements PostRepository {
     return new PostDTO(post)
   }
 
-  async getAllAvailable (options: CursorPagination, userId: string): Promise<PostDTO[]> {
+  async getAllAvailable (options: CursorPagination, userId: string): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
@@ -48,7 +48,14 @@ export class PostRepositoryImpl implements PostRepository {
         deletedAt: null
       },
       include: {
-        author: true // Include author details if needed
+        _count: {
+          select: {
+            reactions: true, //can be removed
+            comments: true,
+          },
+        },
+        reactions: true, //Add reactons for filtering
+        author: true 
       },
 
       orderBy: [
@@ -60,7 +67,11 @@ export class PostRepositoryImpl implements PostRepository {
         }
       ]
     })
-    return posts.map(post => new PostDTO(post))
+    return posts.map(post => {
+      const likeCount = post.reactions.filter(reaction => reaction.type === 'LIKE').length;
+      const retweetCount = post.reactions.filter(reaction => reaction.type === 'RETWEET').length;
+      return new ExtendedPostDTO({...post, qtyComments: post._count.comments, qtyLikes: likeCount, qtyRetweets: retweetCount })
+    })
   }
 
   async delete (postId: string): Promise<void> {
