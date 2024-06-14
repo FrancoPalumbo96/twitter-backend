@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { ReactionType } from "@prisma/client";
 import { ReactionDTO } from "../dto";
 import { ReactionRepository } from "./reaction.repository";
+import { NotFoundException } from '@utils'
 
 export class ReactionRepositoryImpl implements ReactionRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -69,7 +70,7 @@ export class ReactionRepositoryImpl implements ReactionRepository {
       });
 
       if (!reaction) {
-        throw new Error('Reaction not found');
+        throw new NotFoundException('Reaction not found');
       }
 
       let deleteAt = reaction?.deletedAt ?? undefined;
