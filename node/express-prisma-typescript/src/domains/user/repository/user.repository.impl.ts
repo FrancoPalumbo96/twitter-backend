@@ -22,6 +22,7 @@ export class UserRepositoryImpl implements UserRepository {
 
     const userName = user ? (user.name ?? user.username) : '';
 
+    //TODO add profile picture
     return user ? new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null}) : null
   }
 
@@ -67,7 +68,7 @@ export class UserRepositoryImpl implements UserRepository {
 
     return users.map(user => {
       const userName = user ? (user.name ?? user.username) : '';
-
+      //TODO add profile picture  
       return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null})
     })
   }
@@ -86,5 +87,42 @@ export class UserRepositoryImpl implements UserRepository {
       }
     })
     return user ? new ExtendedUserDTO(user) : null
+  }
+
+  //TODO add pagination
+  async getByUsernamePrefix (userId: string, usernamePrefix: string): Promise<UserViewDTO[]>{
+    const users = await this.db.user.findMany({
+      where: {
+        deletedAt: null, 
+        id: { not: userId },
+        AND: [
+          {
+            username: { //Username includes usernamePrefix with case insensitive
+              contains: usernamePrefix, 
+              mode: 'insensitive'
+            }
+          },
+          {
+            OR: [
+              { privateUser: false }, //Public User
+              {
+                followers: {
+                  some: {
+                    followerId: userId, //User follows the usernamePrefix
+                    deletedAt: null
+                  }
+                }
+              }
+            ]
+          },
+        ]
+      }
+    });
+
+    return users.map(user => {
+      const userName = user ? (user.name ?? user.username) : '';
+      //TODO add profile picture
+      return new UserViewDTO({id: user.id, name: userName, username: user.username, profilePicture: null})
+    })
   }
 }

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@utils/errors'
+import { NotFoundException, ValidationException } from '@utils/errors'
 import { OffsetPagination } from 'types'
 import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
@@ -8,7 +8,7 @@ import { AwsService } from '@domains/aws/service'
 export class UserServiceImpl implements UserService {
   constructor (private readonly repository: UserRepository, private readonly awsService: AwsService) {}
 
-  async getUser (userId: any): Promise<UserViewDTO> {
+  async getUser (userId: string): Promise<UserViewDTO> {
     const user = await this.repository.getById(userId)
 
     if (!user) throw new NotFoundException('user')
@@ -22,7 +22,7 @@ export class UserServiceImpl implements UserService {
     }
   }
 
-  async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
+  async getUserRecommendations (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
     
     const users = await this.repository.getRecommendedUsersPaginated(userId, options)
 
@@ -40,7 +40,19 @@ export class UserServiceImpl implements UserService {
     return usersWithProfilePictures;
   }
 
-  async deleteUser (userId: any): Promise<void> {
-    await this.repository.delete(userId)
+  async getByUsernamePrefix (userId: string, usernamePrefix: string): Promise<UserViewDTO[]>{
+    if(!usernamePrefix || typeof usernamePrefix !== 'string'){
+      const errors = [
+        { field: 'username', message: 'Username string is required' },
+      ];
+      throw new ValidationException(errors)
+    }
+
+    return await this.repository.getByUsernamePrefix(userId, usernamePrefix)
   }
+
+  async deleteUser (userId: string): Promise<void> {
+    return await this.repository.delete(userId)
+  }
+  
 }
