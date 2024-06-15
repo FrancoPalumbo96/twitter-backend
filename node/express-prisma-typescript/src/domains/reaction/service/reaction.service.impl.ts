@@ -14,7 +14,7 @@ export class ReactionServiceImpl implements ReactionService {
       if(!reactionType)
         throw new ValidationException([{ field: 'type', message: 'Invalid reaction type' }])
 
-      const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType)
+      const reaction: ReactionDTO | undefined = await this.repository.get(userId, postId, reactionType)
 
       if(reaction){
         if(!reaction.deletedAt){
@@ -40,7 +40,7 @@ export class ReactionServiceImpl implements ReactionService {
       if(!reactionType)
         throw new ConflictException('Reaction type does not exist')
 
-      const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType);
+      const reaction: ReactionDTO | undefined = await this.repository.get(userId, postId, reactionType);
 
       if(!reaction){
         throw new NotFoundException('Could not found Reaction')

@@ -59,59 +59,30 @@ export class ReactionRepositoryImpl implements ReactionRepository {
     } 
   }
   
-  async get(userId: string): Promise<ReactionDTO[]>;
-  async get(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO>;
-  async get(userId: string, postId: string): Promise<ReactionDTO>
-  async get(userId: string, postId?: string, type?: ReactionType): Promise<ReactionDTO | ReactionDTO[]> {
+  //TODO fix this
+  async get(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO | undefined> {
     try {
       //TODO simplify and add restriction based on usedId
-      if (postId && type) {
-        // Implementation for fetching a specific reaction by userId, postId, and type
-        const reaction = await this.db.reaction.findUnique({
-          where: {
-            unique_user_post_reaction: {
-              userId,
-              postId,
-              type,
-            },
-          },
-        });
-
-        if (!reaction) {
-          throw new NotFoundException('Reaction not found');
-        }
-
-        let deleteAt = reaction?.deletedAt ?? undefined;
-
-        return new ReactionDTO({...reaction, deletedAt: deleteAt});
-
-      } else if (postId) {
-        // Implementation for fetching reactions by userId and postId
-        const reactions = await this.db.reaction.findMany({
-          where: {
+      const reaction = await this.db.reaction.findUnique({
+        where: {
+          unique_user_post_reaction: {
             userId,
             postId,
+            type,
           },
-        });
+        },
+      });
 
-        return reactions.map(reaction => {
-          let deleteAt = reaction?.deletedAt ?? undefined;
-          return new ReactionDTO({...reaction, deletedAt: deleteAt})
-        });
+      console.log("Paso por aca entonce no pincho")
+      console.log(JSON.stringify(reaction))
 
-      } else {
-        // Implementation for fetching reactions by userId
-        const reactions = await this.db.reaction.findMany({
-          where: {
-            userId,
-          },
-        });
-
-        return reactions.map(reaction => {
-          let deleteAt = reaction?.deletedAt ?? undefined;
-          return new ReactionDTO({...reaction, deletedAt: deleteAt})
-        });
+      if (!reaction) {
+        return undefined
       }
+
+      let deleteAt = reaction?.deletedAt ?? undefined;
+      return new ReactionDTO({...reaction, deletedAt: deleteAt});
+      
     } catch (error) {
       throw new ValidationException([
         { field: 'postId', message: 'Invalid postId' }, 
