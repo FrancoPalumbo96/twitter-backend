@@ -55,18 +55,25 @@ awsRouter.post('/presigned_post_url', async (req: Request, res: Response) => {
 awsRouter.get('/get', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  const key = await service.getProfileKey(userId)
-
-  return res.status(HttpStatus.CREATED).json(key)
+  try {
+    const key = await service.getProfileKey(userId)
+    return res.status(HttpStatus.CREATED).json(key)
+  } catch (error) {
+    return res.status(HttpStatus.CONFLICT).send()
+  }
 })
 
 awsRouter.get('/get/:post_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { post_id: postId } = req.params
 
-  const keys = await service.getPostsKeys(userId, postId)
+  try {
+    const keys = await service.getPostsKeys(userId, postId)
+    return res.status(HttpStatus.CREATED).json(keys)
 
-  return res.status(HttpStatus.CREATED).json(keys)
+  } catch (error) {
+    return res.status(HttpStatus.CONFLICT).send()
+  }
 })
 
 export default awsRouter

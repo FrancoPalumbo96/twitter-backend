@@ -90,8 +90,6 @@ export class AwsServiceImpl implements AwsService {
 
     try {
       const data = await this.s3.listObjectsV2(params).promise() 
-      
-      
       const keys = data.Contents?.map(object => object.Key) || []
     
       // Filter out undefined keys and return the array
