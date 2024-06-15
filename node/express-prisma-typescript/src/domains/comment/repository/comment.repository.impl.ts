@@ -1,7 +1,7 @@
 import { ExtendedPostDTO, PostDTO } from '@domains/post/dto';
 import { CommentRepository } from './comment.repository'
 import { PrismaClient } from '@prisma/client';
-import { NotFoundException } from '@utils'
+import { NotFoundException, ValidationException } from '@utils'
 import { ExtendedUserDTO } from '@domains/user/dto';
 import { CursorPagination } from '@types';
 
@@ -9,133 +9,143 @@ export class CommentRepositoryImpl implements CommentRepository {
   constructor(private readonly db: PrismaClient){}
 
   async get (userId: string, authorId: string): Promise<PostDTO[]> {
-    const comments = await this.db.post.findMany({
-      where: {
-        authorId: authorId,
-        deletedAt: null,
-        parentId: {
-          not: null
-        },
-        OR: [
-          {
-            // Author is not a private user
-            author: {
-              privateUser: false,
-              deletedAt: null
-            },
+    try {
+      const comments = await this.db.post.findMany({
+        where: {
+          authorId: authorId,
+          deletedAt: null,
+          parentId: {
+            not: null
           },
-          {
-            // User follows the author
-            author: {
-              followers: {
-                some: {
-                  followerId: userId,
-                  deletedAt: null,
+          OR: [
+            {
+              // Author is not a private user
+              author: {
+                privateUser: false,
+                deletedAt: null
+              },
+            },
+            {
+              // User follows the author
+              author: {
+                followers: {
+                  some: {
+                    followerId: userId,
+                    deletedAt: null,
+                  },
                 },
               },
             },
-          },
-          {
-            // User is the Author
-            author: {
-              id: userId
+            {
+              // User is the Author
+              author: {
+                id: userId
+              }
             }
-          }
-        ]
-      }
-    })
-
-    return comments.map(comment => new PostDTO(comment))
+          ]
+        }
+      })
+  
+      return comments.map(comment => new PostDTO(comment))
+    } catch (error) {
+      throw new ValidationException([{ field: 'authorId', message: 'Invalid authorId' }])
+    }
   }
 
   async getByPostId (userId: string, postId: string, cursorPagination: CursorPagination): Promise<ExtendedPostDTO[]> {
-    const originalPost = await this.db.post.findFirst({
-      where: {
-        id: postId,
-        OR: [
-          {
-            // Author is not a private user
-            author: {
-              privateUser: false,
-              deletedAt: null
+    try {
+      const originalPost = await this.db.post.findFirst({
+        where: {
+          id: postId,
+          deletedAt: null,
+          OR: [
+            {
+              // Author is not a private user
+              author: {
+                privateUser: false,
+                deletedAt: null
+              },
             },
-          },
-          {
-            // User follows the author
-            author: {
-              followers: {
-                some: {
-                  followerId: userId,
-                  deletedAt: null,
+            {
+              // User follows the author
+              author: {
+                followers: {
+                  some: {
+                    followerId: userId,
+                    deletedAt: null,
+                  },
                 },
               },
             },
-          },
-          {
-            // User is the Author
-            author: {
-              id: userId
+            {
+              // User is the Author
+              author: {
+                id: userId
+              }
             }
-          }
-        ]
+          ]
+        }
+      })
+  
+      if(originalPost?.deletedAt){
+        throw new NotFoundException('Post does not exists') //original post was deleted
       }
-    })
-
-    if(originalPost?.deletedAt){
-      throw new NotFoundException('Post does not exists') //original post was deleted
-    }
-
-    const { limit, before, after } = cursorPagination;
-    let paginationConditions: any = {};
-    if (before) {
-      paginationConditions.id = { lt: before }; //less than
-    }
-    if (after) {
-      paginationConditions.id = { gt: after }; //greater than
-    }
-
-    const commentsInPostAndReactions = await this.db.post.findMany({
-      where: {
-        parentId: postId, //parentId is the original post 
-        ...paginationConditions, //Pagination conditions
-      },
-      include: {
-        _count: {
-          select: {
-            reactions: true, //can be removed
-            comments: true,
+  
+      const { limit, before, after } = cursorPagination;
+      let paginationConditions: any = {};
+      
+      if (before) {
+        paginationConditions.id = { lt: before }; //less than
+      }
+      if (after) {
+        paginationConditions.id = { gt: after }; //greater than
+      }
+  
+      const commentsInPostAndReactions = await this.db.post.findMany({
+        where: {
+          parentId: postId, //parentId is the original post 
+          ...paginationConditions, //Pagination conditions
+        },
+        include: {
+          _count: {
+            select: {
+              reactions: true, //can be removed
+              comments: true,
+            },
+          },
+          reactions: true, //Add reactons for filtering
+          author: true,    //Add author for ExtendedPostDTO
+        },
+        orderBy: {
+          reactions: {
+            _count: 'desc', //Sort by number of reactions
           },
         },
-        reactions: true, //Add reactons for filtering
-        author: true,    //Add author for ExtendedPostDTO
-      },
-      orderBy: {
-        reactions: {
-          _count: 'desc', //Sort by number of reactions
-        },
-      },
-      take: limit,
-    })
-
-    //sorted by reactions
-    const processedComments = commentsInPostAndReactions.map(comment => {
-      const likeCount = comment.reactions.filter(reaction => reaction.type === 'LIKE').length;
-      const retweetCount = comment.reactions.filter(reaction => reaction.type === 'RETWEET').length;
-
-      return new ExtendedPostDTO({
-        id: comment.id,
-        authorId: comment.authorId,
-        content: comment.content,
-        images: comment.images,
-        createdAt: comment.createdAt,
-        parentId: comment.parentId,
-        author: new ExtendedUserDTO({...comment.author}),
-        qtyComments: comment._count.comments,
-        qtyLikes: likeCount,
-        qtyRetweets: retweetCount,
+        take: limit,
+      })
+  
+      //sorted by reactions
+      const processedComments = commentsInPostAndReactions.map(comment => {
+        const likeCount = comment.reactions.filter(reaction => reaction.type === 'LIKE').length;
+        const retweetCount = comment.reactions.filter(reaction => reaction.type === 'RETWEET').length;
+  
+        return new ExtendedPostDTO({
+          id: comment.id,
+          authorId: comment.authorId,
+          content: comment.content,
+          images: comment.images,
+          createdAt: comment.createdAt,
+          parentId: comment.parentId,
+          author: new ExtendedUserDTO({...comment.author}),
+          qtyComments: comment._count.comments,
+          qtyLikes: likeCount,
+          qtyRetweets: retweetCount,
+        });
       });
-    });
-
-    return processedComments;
+  
+      return processedComments;
+    } catch (error) {
+      throw new ValidationException([{ field: 'authorId', message: 'Invalid authorId' }])
+    }
   }
 }
