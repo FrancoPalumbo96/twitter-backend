@@ -7,4 +7,5 @@ export interface PostRepository {
   delete: (postId: string) => Promise<void>
   getById: (postId: string, userId: string) => Promise<PostDTO | null>
   getByAuthorId: (authorId: string, userId: string) => Promise<ExtendedPostDTO[]>
+  canUserViewAuthor: (userId: string, authorId: string) => Promise<void>
 }

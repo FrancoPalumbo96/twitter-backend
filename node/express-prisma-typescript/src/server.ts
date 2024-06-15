@@ -42,9 +42,7 @@ app.use('/api', router)
 app.use(ErrorHandling)
 
 //TODO
-//Check all routes happy path
 //Complete all todos
-//Fix error handling services and routers
 
 app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)

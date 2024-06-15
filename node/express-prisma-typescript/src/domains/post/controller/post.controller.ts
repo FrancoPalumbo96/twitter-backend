@@ -30,9 +30,9 @@ postRouter.get('/', async (req: Request, res: Response) => {
   }
 })
 
-postRouter.get('/:postId', async (req: Request, res: Response) => {
+postRouter.get('/:post_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const { postId } = req.params
+  const { post_id: postId } = req.params
 
   try {
     const post = await service.getPost(userId, postId)
@@ -46,9 +46,9 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   }
 })
 
-postRouter.get('/by_user/:user_Id', async (req: Request, res: Response) => {
+postRouter.get('/by_user/:user_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const { user_Id: authorId } = req.params
+  const { user_id: authorId } = req.params
 
   try {
     const posts = await service.getPostsByAuthor(userId, authorId)

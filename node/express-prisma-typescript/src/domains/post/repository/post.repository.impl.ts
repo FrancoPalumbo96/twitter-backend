@@ -181,6 +181,46 @@ export class PostRepositoryImpl implements PostRepository {
     }
   }
 
+  async canUserViewAuthor (userId: string, authorId: string): Promise<void>{
+    try {
+      const author = await this.db.user.findMany({
+        where: {
+          id: authorId,
+          deletedAt: null,
+          OR: [
+            {
+              //userId follows the author
+              followers: {
+                some: {
+                  id: userId,
+                  deletedAt: null
+                }
+              }
+            },
+            {
+              //the author is public
+              privateUser: false,
+              deletedAt: null
+            },
+            {
+              //the author is the userId
+              id: userId,
+              deletedAt: null
+            }
+          ] 
+        }
+      })
+
+      if(author.length === 0){
+        throw new NotFoundException(`User id ${authorId}`)
+      } else {
+        return
+      }
+    } catch (error) {
+      throw new NotFoundException(`User id ${authorId}`)
+    }
+  }
+
   async delete (postId: string): Promise<void> {
     try {
       await this.db.post.update({
