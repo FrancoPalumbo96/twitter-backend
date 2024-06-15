@@ -2,7 +2,7 @@ import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
-import { ForbiddenException, NotFoundException, ValidationException, ConflictException } from '@utils'
+import { ForbiddenException, NotFoundException, ValidationException, ConflictException, HttpException } from '@utils'
 import { CursorPagination } from '@types'
 
 export class PostServiceImpl implements PostService {
@@ -13,10 +13,10 @@ export class PostServiceImpl implements PostService {
     try {
       return await this.repository.create(userId, data)
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error creating post: ${error}`);
     }
   }
 
@@ -31,10 +31,10 @@ export class PostServiceImpl implements PostService {
 
       await this.repository.delete(postId)
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error deleting post: ${error}`);
     }
   }
 
@@ -46,10 +46,10 @@ export class PostServiceImpl implements PostService {
 
       return post
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error fetching post: ${error}`);
     }
   }
 
@@ -62,10 +62,10 @@ export class PostServiceImpl implements PostService {
   
       return posts  
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error fetching posts: ${error}`);
     }
   }
 
@@ -75,10 +75,10 @@ export class PostServiceImpl implements PostService {
     try {
       return await this.repository.getByAuthorId(authorId, userId)
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error fetching post: ${error}`);
     }
   }
 }

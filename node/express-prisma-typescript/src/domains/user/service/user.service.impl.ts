@@ -1,4 +1,4 @@
-import { ConflictException, ValidationException } from '@utils/errors'
+import { ConflictException, HttpException, ValidationException } from '@utils/errors'
 import { OffsetPagination } from 'types'
 import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
@@ -16,8 +16,9 @@ export class UserServiceImpl implements UserService {
         throw new ValidationException([{ field: 'userId', message: 'Invalid userId' }])
   
       return user
+
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
       throw new ConflictException(`Error fetching user: ${error}`);
@@ -28,13 +29,13 @@ export class UserServiceImpl implements UserService {
   async getUserRecommendations (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
     try {
       const users = await this.repository.getRecommendedUsersPaginated(userId, options)
-
       return users 
+
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error fetching users: ${error}`);
     }
   }
 
@@ -45,13 +46,13 @@ export class UserServiceImpl implements UserService {
       }
   
       const users = await this.repository.getByUsernamePrefix(userId, usernamePrefix)
-  
       return users
+
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error fetching users: ${error}`);
     }
   }
 
@@ -59,7 +60,7 @@ export class UserServiceImpl implements UserService {
     try {
       return await this.repository.updateProfilePicture(userId, key)
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
       throw new ConflictException(`Error fetching user: ${error}`);
@@ -71,7 +72,7 @@ export class UserServiceImpl implements UserService {
       await this.repository.delete(userId)
       return
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
       throw new ConflictException(`Error fetching user: ${error}`);

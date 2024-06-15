@@ -26,7 +26,7 @@ postRouter.get('/', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 
@@ -42,7 +42,7 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 
@@ -58,7 +58,7 @@ postRouter.get('/by_user/:user_Id', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 
@@ -74,7 +74,7 @@ postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, re
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }  
 })
 
@@ -89,6 +89,6 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })

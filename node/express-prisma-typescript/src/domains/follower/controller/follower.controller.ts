@@ -25,7 +25,7 @@ followerRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }    
 })
 
@@ -41,6 +41,6 @@ followerRouter.post('/unfollow/:user_id', async (req: Request, res: Response) =>
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }  
 })

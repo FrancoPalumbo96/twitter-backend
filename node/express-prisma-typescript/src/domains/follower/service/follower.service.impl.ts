@@ -1,7 +1,7 @@
 import { FollowerDTO } from "../dto";
 import { FollowerRepository } from "../repository";
 import { FollowerService } from "./follower.service";
-import { ForbiddenException, NotFoundException, ConflictException, ValidationException} from '@utils'
+import { ForbiddenException, NotFoundException, ConflictException, ValidationException, HttpException} from '@utils'
 import { validate } from 'class-validator'
 
 export class FollowerServiceImpl implements FollowerService {
@@ -32,10 +32,10 @@ export class FollowerServiceImpl implements FollowerService {
         return await this.repository.follow(userId, followedId);
       }
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error following user: ${error}`);
     }
   }
 
@@ -54,10 +54,10 @@ export class FollowerServiceImpl implements FollowerService {
 
       await this.repository.unfollow(userId, followedId)
     } catch (error) {
-      if (error instanceof ValidationException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new ConflictException(`Error fetching user: ${error}`);
+      throw new ConflictException(`Error unfollowing user: ${error}`);
     }
   }
 }

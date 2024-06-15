@@ -26,7 +26,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 
@@ -41,7 +41,7 @@ userRouter.get('/me', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 
@@ -56,7 +56,7 @@ userRouter.get('/:user_id', async (req: Request, res: Response) => {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});
     }
-    return res.status(HttpStatus.CONFLICT)
+    return res.status(HttpStatus.CONFLICT).send()
   }
 })
 

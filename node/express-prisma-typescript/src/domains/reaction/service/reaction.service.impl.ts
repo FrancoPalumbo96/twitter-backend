@@ -2,43 +2,57 @@ import { ReactionType } from "@prisma/client";
 import { ReactionRepository } from "../repository";
 import { ReactionService } from "./reaction.service";
 import { ReactionDTO } from "../dto";
-import { NotFoundException, ConflictException } from '@utils'
+import { NotFoundException, ConflictException, ValidationException, HttpException } from '@utils'
 
 export class ReactionServiceImpl implements ReactionService {
   constructor (private readonly repository: ReactionRepository) {}
 
   async react (userId: string, postId: string, type: string): Promise<ReactionDTO> {
-    const reactionType = this.castReactionType(type);
-
-    if(!reactionType)
-      throw new ConflictException('Reaction type does not exist')
-
     try {
+      const reactionType = this.castReactionType(type);
+
+      if(!reactionType)
+        throw new ValidationException([{ field: 'type', message: 'Invalid reaction type' }])
+
       const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType)
 
-      if(!reaction.deletedAt){
-        throw new ConflictException(`Cannot ${reaction.type} twice that post`) //cannot react twice
-      }
+      if(reaction){
+        if(!reaction.deletedAt){
+          throw new ConflictException(`Cannot ${reaction.type} twice that post`) //cannot react twice
+        }
 
-      return await this.repository.react(userId, postId, reactionType, true); //update reaction
+        return await this.repository.react(userId, postId, reactionType, true); //update reaction
+      } else {
+        return await this.repository.react(userId, postId, reactionType); //create reaction
+      }      
     } catch (error) {
-      return await this.repository.react(userId, postId, reactionType); //create reaction
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new ConflictException(`Error at react: ${error}`);
     }
-  
   }
 
   async unreact (userId: string, postId: string, type: string): Promise<void> {
-    const reactionType = this.castReactionType(type);
-    if(!reactionType)
-      throw new ConflictException('Reaction type does not exist')
+    try {
+      const reactionType = this.castReactionType(type);
 
-    const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType);
+      if(!reactionType)
+        throw new ConflictException('Reaction type does not exist')
 
-    if(!reaction){
-      throw new NotFoundException('Could not found Reaction')
+      const reaction: ReactionDTO = await this.repository.get(userId, postId, reactionType);
+
+      if(!reaction){
+        throw new NotFoundException('Could not found Reaction')
+      }
+
+      await this.repository.unreact(userId, reaction.postId, reaction.type)
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new ConflictException(`Error at unreact: ${error}`);
     }
-
-    await this.repository.unreact(userId, reaction.postId, reaction.type)
   }
 
   castReactionType(type: string): ReactionType | null {
