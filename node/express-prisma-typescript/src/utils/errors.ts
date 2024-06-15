@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import HttpStatus from 'http-status'
 import { Logger } from '@utils'
 
-abstract class HttpException extends Error {
+export abstract class HttpException extends Error {
   constructor (readonly code: number, readonly message: string, readonly error?: object[] | object) {
     super(message)
   }
