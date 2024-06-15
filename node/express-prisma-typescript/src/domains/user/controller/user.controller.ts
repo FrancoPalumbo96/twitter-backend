@@ -101,7 +101,7 @@ userRouter.delete('/', async (req: Request, res: Response) => {
 
   try {
     await service.deleteUser(userId)
-    return res.status(HttpStatus.OK).json()
+    return res.status(HttpStatus.OK).json().send(`Deleted user ${userId}`)
   } catch (error) {
     if (error instanceof HttpException) {
       return res.status(error.code).json({message: error.message, errors: error.error});

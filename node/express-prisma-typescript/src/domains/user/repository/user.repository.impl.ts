@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { OffsetPagination } from '@types'
 import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository } from './user.repository'
-import { NotFoundException, ValidationException } from '@utils'
+import { ValidationException } from '@utils'
 
 export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
