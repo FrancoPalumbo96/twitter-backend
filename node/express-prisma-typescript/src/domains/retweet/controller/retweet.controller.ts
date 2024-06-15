@@ -3,7 +3,7 @@ import HttpStatus from 'http-status'
 
 import 'express-async-errors'
 
-import { db } from '@utils'
+import { HttpException, db } from '@utils'
 
 import { RetweetRepository, RetweetRepositoryImpl } from '../repository'
 import { RetweetService, RetweetServiceImpl } from '../service'
@@ -15,10 +15,16 @@ const service: RetweetService = new RetweetServiceImpl(new RetweetRepositoryImpl
 
 retweetRouter.get('/getAll/:user_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-
   const authId = req.params.user_id;
 
-  const retweets = await service.get(userId, authId);
+  try {
+    const retweets = await service.get(userId, authId)
+    return res.status(HttpStatus.OK).send(retweets)
 
-  return res.status(HttpStatus.OK).send(retweets)
+  } catch (error) {
+    if (error instanceof HttpException) {
+      return res.status(error.code).json({message: error.message, errors: error.error})
+    }
+    return res.status(HttpStatus.CONFLICT).send()
+  }
 })

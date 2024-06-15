@@ -3,7 +3,7 @@ import HttpStatus from 'http-status'
 
 import 'express-async-errors'
 
-import { db } from '@utils'
+import { HttpException, db } from '@utils'
 
 import { LikeRepository, LikeRepositoryImpl  } from '../repository'
 import { LikeService, LikeServiceImpl } from '../service'
@@ -15,10 +15,16 @@ const service: LikeService = new LikeServiceImpl(new LikeRepositoryImpl(db))
 
 likeRouter.get('/getAll/:user_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-
   const authId = req.params.user_id;
 
-  const likes = await service.get(userId, authId);
+  try {
+    const likes = await service.get(userId, authId)
+    return res.status(HttpStatus.OK).send(likes)
 
-  return res.status(HttpStatus.OK).send(likes)
+  } catch (error) {
+    if (error instanceof HttpException) {
+      return res.status(error.code).json({message: error.message, errors: error.error});
+    }
+    return res.status(HttpStatus.CONFLICT).send()
+  }
 })
