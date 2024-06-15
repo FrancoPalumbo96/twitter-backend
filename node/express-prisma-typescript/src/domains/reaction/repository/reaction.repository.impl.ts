@@ -59,10 +59,8 @@ export class ReactionRepositoryImpl implements ReactionRepository {
     } 
   }
   
-  //TODO fix this
   async get(userId: string, postId: string, type: ReactionType): Promise<ReactionDTO | undefined> {
     try {
-      //TODO simplify and add restriction based on usedId
       const reaction = await this.db.reaction.findUnique({
         where: {
           unique_user_post_reaction: {
@@ -73,16 +71,13 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         },
       });
 
-      console.log("Paso por aca entonce no pincho")
-      console.log(JSON.stringify(reaction))
-
       if (!reaction) {
         return undefined
       }
 
       let deleteAt = reaction?.deletedAt ?? undefined;
       return new ReactionDTO({...reaction, deletedAt: deleteAt});
-      
+
     } catch (error) {
       throw new ValidationException([
         { field: 'postId', message: 'Invalid postId' }, 
