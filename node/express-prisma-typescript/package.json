@@ -13,7 +13,8 @@
     "db:generate": "prisma generate",
     "seed": "ts-node src/utils/seed.ts",
     "db:clean": "ts-node src/utils/dbcleaner.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:single": "jest src/tests/user.service.test.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

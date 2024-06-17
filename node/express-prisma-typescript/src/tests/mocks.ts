@@ -1,7 +1,3 @@
-export const UserRepository = {
-  getById: jest.fn(),
-  getRecommendedUsersPaginated: jest.fn(),
-  getByUsernamePrefix: jest.fn(),
-  updateProfilePicture: jest.fn(),
-  delete: jest.fn(),
-};
+export const UserRepositoryMock = jest.fn().mockImplementation(() => ({
+  getByEmailOrUsername: jest.fn(),
+}));
