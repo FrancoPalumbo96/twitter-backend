@@ -3,21 +3,22 @@ import { prismaMock } from './config'
 import { AuthServiceImpl } from '@domains/auth/service'
 import { UserRepositoryImpl } from '@domains/user/repository'
 import { users } from './data'
-import { ConflictException } from '@utils'
-//import * as Utils from '@utils'
+import * as Utils from '@utils'
 
 // Mock the entire Utils module
 jest.mock('@utils', () => ({
   ...jest.requireActual('@utils'), // Use actual implementation for other exports
-  checkPassword: jest.fn(async (password: string, hash: string) => {
-    // Simulate the behavior of checkPassword to return true for any password and hash
-    return true;
-  }),
+  checkPassword: jest.fn(), // Mock checkPassword function
 }));
 
 describe('Auth User', () => {
   const userRepository = new UserRepositoryImpl(prismaMock)
   const authService = new AuthServiceImpl(userRepository)
+
+  beforeEach(() => {
+    // Reset mock implementation before each test
+    (Utils.checkPassword as jest.Mock).mockReset();
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -42,11 +43,14 @@ describe('Auth User', () => {
 
     jest.spyOn(userRepository, 'getByEmailOrUsername').mockResolvedValueOnce({ ...user });
 
-    await expect(authService.signup(user)).rejects.toThrow(ConflictException);
+    await expect(authService.signup(user)).rejects.toThrow(Utils.ConflictException);
   })
 
   test('Login User should return token', async () => {
     const user = users[0];
+
+    // Customize mock behavior for this specific test case
+    (Utils.checkPassword as jest.Mock).mockResolvedValueOnce(true); 
 
     jest.spyOn(userRepository, 'getByEmailOrUsername').mockResolvedValueOnce({ ...user });
 
@@ -60,12 +64,14 @@ describe('Auth User', () => {
   test('Login User with incorrect password should throw error', async () => {
     const user = users[0];
 
+    // Customize mock behavior for this specific test case
+    (Utils.checkPassword as jest.Mock).mockResolvedValueOnce(false); 
+
     // Mock checkPassword to resolve to false (indicating incorrect password)
     //jest.spyOn(Utils, 'checkPassword').mockResolvedValueOnce(false);
     
     jest.spyOn(userRepository, 'getByEmailOrUsername').mockResolvedValueOnce({ ...user });
 
-    await expect(authService.signup(user)).rejects.toThrow(ConflictException);
+    await expect(authService.login(user)).rejects.toThrow(Utils.UnauthorizedException);
   })
-
 })
