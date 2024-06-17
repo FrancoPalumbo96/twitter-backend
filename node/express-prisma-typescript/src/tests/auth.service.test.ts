@@ -7,8 +7,8 @@ import * as Utils from '@utils'
 
 // Mock the entire Utils module
 jest.mock('@utils', () => ({
-  ...jest.requireActual('@utils'), // Use actual implementation for other exports
-  checkPassword: jest.fn(), // Mock checkPassword function
+  ...jest.requireActual('@utils'), 
+  checkPassword: jest.fn(), //Mock checkPassword
 }));
 
 describe('Auth User', () => {
@@ -16,7 +16,6 @@ describe('Auth User', () => {
   const authService = new AuthServiceImpl(userRepository)
 
   beforeEach(() => {
-    // Reset mock implementation before each test
     (Utils.checkPassword as jest.Mock).mockReset();
   });
 
@@ -49,7 +48,6 @@ describe('Auth User', () => {
   test('Login User should return token', async () => {
     const user = users[0];
 
-    // Customize mock behavior for this specific test case
     (Utils.checkPassword as jest.Mock).mockResolvedValueOnce(true); 
 
     jest.spyOn(userRepository, 'getByEmailOrUsername').mockResolvedValueOnce({ ...user });
@@ -64,11 +62,7 @@ describe('Auth User', () => {
   test('Login User with incorrect password should throw error', async () => {
     const user = users[0];
 
-    // Customize mock behavior for this specific test case
     (Utils.checkPassword as jest.Mock).mockResolvedValueOnce(false); 
-
-    // Mock checkPassword to resolve to false (indicating incorrect password)
-    //jest.spyOn(Utils, 'checkPassword').mockResolvedValueOnce(false);
     
     jest.spyOn(userRepository, 'getByEmailOrUsername').mockResolvedValueOnce({ ...user });
 
