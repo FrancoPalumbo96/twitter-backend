@@ -16,10 +16,10 @@ const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
 //Returns all public users and private users that follows me
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const { limit, skip } = req.query as Record<string, string>
+  console.log(userId)
 
   try {
-    const users = await service.getUserRecommendations(userId, { limit: Number(limit), skip: Number(skip) })
+    const users = await service.getUserRecommendations(userId, {limit: 5, skip: 0})
     return res.status(HttpStatus.OK).json(users)
 
   } catch (error) {
