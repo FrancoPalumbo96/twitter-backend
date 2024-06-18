@@ -63,4 +63,47 @@ describe('Reaction Service', () => {
     prismaMock.reaction.update.mockRejectedValue(new Error('Post not found'));
     await expect(reactionService.react('1', '1', ReactionType.LIKE)).rejects.toThrow('Validation Error');
   });
+
+  test('should delete a reaction successfully', async () => {
+    const post = posts[0]
+    const user = users[0]
+    const deletedLike = {
+      id: '1',
+      userId: '1',
+      postId: '1',
+      type: ReactionType.LIKE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date()
+    }
+
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.reaction.findUnique.mockResolvedValue(like)
+    prismaMock.reaction.update.mockResolvedValue(deletedLike);
+
+    expect(await reactionService.unreact(user.id, post.id, ReactionType.LIKE)).toBe(undefined)
+  })
+
+  test('should throw an error when deleting a reaction that does not exist', async () => {
+    const post = posts[0]
+    const user = users[0]
+    const deletedLike = {
+      id: '1',
+      userId: '1',
+      postId: '1',
+      type: ReactionType.LIKE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date()
+    }
+
+    prismaMock.post.findUnique.mockResolvedValue(post)
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.reaction.findUnique.mockResolvedValue(null)
+    prismaMock.reaction.update.mockResolvedValue(deletedLike);
+
+    await expect(reactionService.unreact(user.id, post.id, ReactionType.LIKE))
+      .rejects.toThrow(`Not found. Couldn't find Reaction`);
+  })
 })

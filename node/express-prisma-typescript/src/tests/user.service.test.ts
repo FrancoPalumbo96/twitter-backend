@@ -9,7 +9,7 @@ import { ValidationException } from '@utils'
 describe('User Service', () => {
   const userService: UserService = new UserServiceImpl(new UserRepositoryImpl(prismaMock))
 
-  test('should get a user', async () => {
+  test('should get a user successfully', async () => {
     const user = users[0]
     prismaMock.user.findUnique.mockResolvedValue(user)
     const userViewDTO = await userService.getUser(user.id)
@@ -31,7 +31,7 @@ describe('User Service', () => {
     expect(userService.getUser(user.id)).rejects.toThrow(ValidationException)
   })
 
-  test('should get a user by prefix', async () => {
+  test('should get a user by prefix successfully', async () => {
     const user = users[0]
     const prefix = 'ju'
     const expectedUserViewDTO = {
@@ -46,7 +46,7 @@ describe('User Service', () => {
     expect(foundUsers[0]).toEqual(expectedUserViewDTO)
   })
 
-  test('empty list when no users by prefix is found', async () => {
+  test('should get empty list when no users by prefix is found', async () => {
     const user = users[0]
     const prefix = 'ju'
     prismaMock.user.findMany.mockResolvedValue([])
@@ -60,7 +60,25 @@ describe('User Service', () => {
     await expect(userService.getUser('1')).rejects.toThrow('Validation Error')
   })
 
-  test('should delete a user that exists', async () => {
-    
+  test('should delete a user successfully', async () => {
+    const user = users[0]
+
+    const deletedUser = {
+      id: '1',
+      email: 'juan@gmail.com',
+      username: 'Juan96',
+      name: 'juan',
+      password: 'Strong_Password_00',
+      privateUser: true,
+      profilePicture: 'key_test_1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date(),
+    }
+  
+    prismaMock.user.findUnique.mockResolvedValue(user)
+    prismaMock.user.update.mockResolvedValue(deletedUser);
+
+    expect(await userService.deleteUser(user.id)).toBe(undefined)
   })
 })
