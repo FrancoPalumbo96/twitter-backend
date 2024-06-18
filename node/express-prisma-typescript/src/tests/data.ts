@@ -74,6 +74,21 @@ export const posts = [
   }
 ]
 
+export const comments = [
+  {
+    id: '10',
+    authorId: '1',
+    content: 'comment 1',
+    images: ['key 10'],
+    parentId: '1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null
+  }
+]
+
+
+
 export const like = {
   id: '1',
   userId: '1',
