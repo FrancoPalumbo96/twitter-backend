@@ -87,8 +87,6 @@ export const comments = [
   }
 ]
 
-
-
 export const like = {
   id: '1',
   userId: '1',
@@ -108,3 +106,22 @@ export const retweet = {
   updatedAt: new Date(),
   deletedAt: null
 }
+
+export const follows = [
+  {
+    id: '1',
+    followerId: '1',
+    followedId: '2',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null
+  },
+  {
+    id: '2',
+    followerId: '2',
+    followedId: '1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null
+  },
+]
