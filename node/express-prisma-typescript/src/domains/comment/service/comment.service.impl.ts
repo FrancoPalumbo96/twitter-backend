@@ -19,14 +19,10 @@ export class CommentServiceImpl implements CommentService {
     
   }
 
-  async getByPostId (userId: string, postId: string): Promise<ExtendedPostDTO[]>{
+  
+  async getByPostId (userId: string, postId: string, options: CursorPagination): Promise<ExtendedPostDTO[]>{
     try {
-      //Examples of usages for cursor paginator
-      //const cursorPagination: CursorPagination = {limit: 1, after: "071f8c0e-c623-4421-a83d-a08dfc00daf4"}
-      //const cursorPagination: CursorPagination = {limit: 1}
-      const cursorPagination: CursorPagination = {limit: 5}
-
-      const comments = await this.repository.getByPostId(userId, postId, cursorPagination)
+      const comments = await this.repository.getByPostId(userId, postId, options)
 
       return comments
     } catch (error) {

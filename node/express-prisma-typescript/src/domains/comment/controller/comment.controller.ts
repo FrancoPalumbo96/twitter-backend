@@ -32,9 +32,13 @@ commentRouter.get('/by_user/:user_id', async (req: Request, res: Response) => {
 commentRouter.get('/by_post/:post_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const postId = req.params.post_id;
+  const { limit, before, after } = req.query as Record<string, string>
+
+  const parsedLimit = parseInt(limit, 10);
+  const validLimit = isNaN(parsedLimit) ? 5 : parsedLimit;
 
   try {
-    const comments = await service.getByPostId(userId, postId)
+    const comments = await service.getByPostId(userId, postId, {limit: validLimit, before, after})
     return res.status(HttpStatus.OK).send(comments)
 
   } catch (error) {
