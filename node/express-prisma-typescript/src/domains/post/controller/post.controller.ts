@@ -18,8 +18,11 @@ postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
 
+  const parsedLimit = parseInt(limit, 10);
+  const validLimit = isNaN(parsedLimit) ? 5 : parsedLimit;
+
   try {
-    const posts = await service.getLatestPosts(userId, { limit: Number(limit), before, after })
+    const posts = await service.getLatestPosts(userId, { limit: validLimit, before, after })
     return res.status(HttpStatus.OK).json(posts)
 
   } catch (error) {

@@ -79,7 +79,7 @@ export class PostRepositoryImpl implements PostRepository {
         return new ExtendedPostDTO({...post, qtyComments: post._count.comments, qtyLikes: likeCount, qtyRetweets: retweetCount })
       })
     } catch (error) {
-      throw new ValidationException([{ field: 'userId', message: 'Invalid userId' }])
+      throw new ValidationException([{ field: 'options', message: 'Invalid pagination' }])
     }
   }
 
