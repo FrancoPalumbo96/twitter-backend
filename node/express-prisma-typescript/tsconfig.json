@@ -22,7 +22,9 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@*": ["./*"]
-    }
+    },
+    "lib": ["es6"],
+    "types": ["node", "jest"]
   },
   "lib": ["es2022"],
   "include": ["src/**/*"],

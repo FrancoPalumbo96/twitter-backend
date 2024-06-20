@@ -43,7 +43,7 @@ export class ReactionServiceImpl implements ReactionService {
       const reaction: ReactionDTO | undefined = await this.repository.get(userId, postId, reactionType);
 
       if(!reaction){
-        throw new NotFoundException('Could not found Reaction')
+        throw new NotFoundException('Reaction')
       }
 
       await this.repository.unreact(userId, reaction.postId, reaction.type)

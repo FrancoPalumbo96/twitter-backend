@@ -32,8 +32,11 @@ export class ReactionRepositoryImpl implements ReactionRepository {
           },
         })
       }
-      
-      return new ReactionDTO({...reaction, deletedAt: undefined});
+
+      if(reaction)
+        return new ReactionDTO({...reaction, deletedAt: undefined});
+      else
+        throw new ValidationException([{ field: 'postId', message: 'Invalid postId' }])
 
     } catch (error) {
       throw new ValidationException([{ field: 'postId', message: 'Invalid postId' }])
