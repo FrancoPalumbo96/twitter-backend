@@ -16,11 +16,15 @@ const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
 //Returns all public users and private users that follows me
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const { limit, skip } = req.query as Record<string, string>
-  //Try This ?limit=<limitValue>?skip=<skipValue>
-  //What to do if limit and skip are not asigned?
+  const { limit, skip } = req.query as Record<string, string> //example ?limit=3&skip=0
+
+  const parsedLimit = parseInt(limit, 10);
+  const parsedSkip = parseInt(skip, 10);  
+  const validLimit = isNaN(parsedLimit) ? 5 : parsedLimit;
+  const validSkip = isNaN(parsedSkip) ? 0 : parsedSkip;
+
   try {
-    const users = await service.getUserRecommendations(userId, { limit: Number(limit), skip: Number(skip) })
+    const users = await service.getUserRecommendations(userId, { limit: validLimit, skip: validSkip })
     return res.status(HttpStatus.OK).json(users)
 
   } catch (error) {
