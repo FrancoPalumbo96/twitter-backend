@@ -68,9 +68,15 @@ userRouter.get('/:user_id', async (req: Request, res: Response) => {
 userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { username: usernamePrefix} = req.params
+  const { limit, skip } = req.query as Record<string, string> 
+
+  const parsedLimit = parseInt(limit, 10);
+  const parsedSkip = parseInt(skip, 10);  
+  const validLimit = isNaN(parsedLimit) ? 5 : parsedLimit;
+  const validSkip = isNaN(parsedSkip) ? 0 : parsedSkip;
 
   try {
-    const users = await service.getByUsernamePrefix(userId, usernamePrefix)
+    const users = await service.getByUsernamePrefix(userId, usernamePrefix, { limit: validLimit, skip: validSkip })
     return res.status(HttpStatus.OK).json(users)
 
   } catch (error) {

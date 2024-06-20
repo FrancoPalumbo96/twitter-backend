@@ -39,13 +39,13 @@ export class UserServiceImpl implements UserService {
     }
   }
 
-  async getByUsernamePrefix (userId: string, usernamePrefix: string): Promise<UserViewDTO[]>{
+  async getByUsernamePrefix (userId: string, usernamePrefix: string, options: OffsetPagination): Promise<UserViewDTO[]>{
     try {
       if(!usernamePrefix || typeof usernamePrefix !== 'string'){
         throw new ValidationException([{ field: 'username', message: 'Invalid username prefix' }])
       }
   
-      const users = await this.repository.getByUsernamePrefix(userId, usernamePrefix)
+      const users = await this.repository.getByUsernamePrefix(userId, usernamePrefix, options)
       return users
 
     } catch (error) {
