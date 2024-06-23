@@ -108,8 +108,6 @@ model Message {
 
   @@index([senderId])
   @@index([receiverId])
-
-  //add conversation id (@@unique([followerId, followedId]) // Unique Pair constraint) //avoid rwo conversations for the same 2 users
 }
 
 enum ReactionType {

@@ -56,8 +56,5 @@ httpServer.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)
 });
 
-//TODO
-//Complete all todos
-
 
 export { httpServer }

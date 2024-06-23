@@ -126,7 +126,6 @@ export class UserRepositoryImpl implements UserRepository {
     }
   }
 
-  //TODO add pagination
   async getByUsernamePrefix (userId: string, usernamePrefix: string, options: OffsetPagination): Promise<UserViewDTO[]>{
     try {
       const users = await this.db.user.findMany({
