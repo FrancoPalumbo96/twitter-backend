@@ -79,6 +79,6 @@ describe('User Service', () => {
     prismaMock.user.findUnique.mockResolvedValue(user)
     prismaMock.user.update.mockResolvedValue(deletedUser);
 
-    expect(await userService.deleteUser(user.id)).toBe({})
+    expect(await userService.deleteUser(user.id)).toBe(undefined)
   })
 })
