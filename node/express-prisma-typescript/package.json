@@ -14,7 +14,7 @@
     "seed": "ts-node src/utils/seed.ts",
     "db:clean": "ts-node src/utils/dbcleaner.ts",
     "test": "jest",
-    "test:single": "jest src/tests/follow.service.test.ts"
+    "test:single": "jest src/tests/chat.service.test.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

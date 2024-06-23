@@ -41,7 +41,7 @@ describe('User Service', () => {
       profilePicture: user.profilePicture
     }
     prismaMock.user.findMany.mockResolvedValue([user])
-    const foundUsers = await userService.getByUsernamePrefix(user.id, prefix)
+    const foundUsers = await userService.getByUsernamePrefix(user.id, prefix, {limit: 5, skip: 0})
 
     expect(foundUsers[0]).toEqual(expectedUserViewDTO)
   })
@@ -50,7 +50,7 @@ describe('User Service', () => {
     const user = users[0]
     const prefix = 'ju'
     prismaMock.user.findMany.mockResolvedValue([])
-    const foundUsers = await userService.getByUsernamePrefix(user.id, prefix)
+    const foundUsers = await userService.getByUsernamePrefix(user.id, prefix, {limit: 5, skip: 0})
 
     expect(foundUsers.length).toEqual(0)
   })

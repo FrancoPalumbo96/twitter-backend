@@ -125,3 +125,20 @@ export const follows = [
     deletedAt: null
   },
 ]
+
+export const messages = [
+  {
+    id: '1',
+    senderId: '1',
+    receiverId: '2',
+    content: 'Hello user 2',
+    createdAt: new Date()
+  },
+  {
+    id: '2',
+    senderId: '2',
+    receiverId: '1',
+    content: 'Hello user 1',
+    createdAt: new Date()
+  }
+]
