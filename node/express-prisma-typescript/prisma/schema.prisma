@@ -34,6 +34,8 @@ model User {
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
   reactions Reaction[]
+  sentMessages Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Follow {
@@ -91,6 +93,23 @@ model Reaction {
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, type], name: "unique_user_post_reaction") // Ensure a user can only react once per type
+}
+
+model Message {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  senderId String @db.Uuid
+  receiverId String @db.Uuid
+  content String
+  createdAt DateTime @default(now())
+
+  sender User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+
+  //add conversation id (@@unique([followerId, followedId]) // Unique Pair constraint) //avoid rwo conversations for the same 2 users
 }
 
 enum ReactionType {

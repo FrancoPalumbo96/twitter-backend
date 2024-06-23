@@ -3,9 +3,13 @@ import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-import { Constants, NodeEnv, Logger } from '@utils'
+import { Constants, NodeEnv, Logger, socketAuth } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
+
+import { createServer } from 'node:http'; //TODO try http
+import socketHandler from './domains/chat/socket';
+import { Server } from 'socket.io'
 
 //Swagger
 import swaggerJsdoc from 'swagger-jsdoc'
@@ -41,9 +45,19 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
+const httpServer = createServer(app); // Create HTTP server
+const io = new Server(httpServer)
+
+io.use(socketAuth)
+
+socketHandler(io); // Integrate Socket.IO
+
+httpServer.listen(Constants.PORT, () => {
+  Logger.info(`Server listening on port ${Constants.PORT}`)
+});
+
 //TODO
 //Complete all todos
 
-app.listen(Constants.PORT, () => {
-  Logger.info(`Server listening on port ${Constants.PORT}`)
-})
+
+export { httpServer }
