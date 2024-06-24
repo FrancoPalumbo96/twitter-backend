@@ -205,7 +205,23 @@ router.use('/user', withAuth, userRouter)
  *     tags:
  *       - Post
  *     security:
- *       - BearerAuth: [] 
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of posts to retrieve (default 5)
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *         description: Retrieve posts created before this cursor
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *         description: Retrieve posts created after this cursor 
  *     responses:
  *       200:
  *         description: A list of paginated posts
@@ -221,19 +237,19 @@ router.use('/user', withAuth, userRouter)
  * 
  * /api/post/{post_id}:
  *   get: 
- *     summary: 
- *     description: returns a post by id when authenticated user follows the post_id user or the post_id user is public
+ *     summary: Get post by ID
+ *     description: Returns a post by ID if the authenticated user follows the post owner or the post owner is public
  *     tags:
  *       - Post
  *     security:
- *       - bearerAuth: [] 
+ *       - BearerAuth: [] 
  *     parameters:
  *       - in: path
  *         name: post_id
  *         required: true
  *         schema:
  *           type: string
- *         description: The Id of the post
+ *         description: The ID of the post to retrieve
  *     responses:
  *       200:
  *         description: The post with post id
@@ -254,7 +270,7 @@ router.use('/user', withAuth, userRouter)
  *     tags:
  *       - Post
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -286,7 +302,7 @@ router.use('/user', withAuth, userRouter)
  *     tags:
  *       - Post
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -313,7 +329,7 @@ router.use('/user', withAuth, userRouter)
  *     tags:
  *       - Post
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: postId
@@ -344,7 +360,7 @@ router.use('/post', withAuth, postRouter)
  *     tags:
  *       - Follower
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: user_id
@@ -368,7 +384,7 @@ router.use('/post', withAuth, postRouter)
  *     tags:
  *       - Follower
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: user_id
@@ -395,7 +411,7 @@ router.use('/follower', withAuth, followerRouter)
  *     tags:
  *       - Reaction
  *     security: 
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: post_id
@@ -531,7 +547,7 @@ router.use('/comment', withAuth, commentRouter)
  *           type: string
  *         description: The ID of the user whose likes are to be fetched
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully retrieved likes
@@ -578,7 +594,7 @@ router.use('/like', withAuth, likeRouter)
  *           type: string
  *         description: The ID of the user whose retweets are to be fetched
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully retrieved retweets
@@ -618,7 +634,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *     tags:
  *       - AWS
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -655,7 +671,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *     tags:
  *       - AWS
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -699,7 +715,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *     tags:
  *       - AWS
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       '201':
  *         description: Successfully retrieved profile picture key
@@ -717,7 +733,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *     tags:
  *       - AWS
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: post_id
@@ -749,7 +765,7 @@ router.use('/aws', withAuth, awsRouter)
  *     tags:
  *       - Chat
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: user_id
