@@ -259,8 +259,10 @@ router.use('/user', withAuth, userRouter)
  *               $ref: '#/components/schemas/PostDTO' 
  *       401:
  *         description: Unauthorized. You must login to access this content
+ *       400:
+ *         description: Error Bad Request. Invalid Post Id 
  *       500:
- *         description: Error invalida post id
+ *         description: Server Error
  * 
  * 
  * /api/posts/by_user/{userId}:
