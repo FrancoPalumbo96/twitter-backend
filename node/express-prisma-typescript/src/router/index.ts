@@ -17,7 +17,7 @@ export const router = Router()
 
 //TODO fix bearer token
 //TODO add deletes
-//TODO make it workable
+//TODO test
 
 /**
  * @swagger
@@ -386,15 +386,407 @@ router.use('/post', withAuth, postRouter)
  */
 router.use('/follower', withAuth, followerRouter)
 
+/**
+ * @swagger
+ * /api/reaction/{post_id}:
+ *   post:
+ *     summary:
+ *     description: 
+ *     tags:
+ *       - Reaction
+ *     security: 
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: post_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to react to
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [LIKE, RETWEET]
+ *                 description: Type of reaction
+ *     responses:
+ *       200:
+ *         description: Successfully reacted to the post
+ *       400:
+ *         description: Invalid input
+ *       409:
+ *         description: Conflict or error reacting to the post
+ * 
+ *   delete:
+ *     summary: Remove reaction from a post
+ *     tags: 
+ *       - Reaction
+ *     parameters:
+ *       - in: path
+ *         name: post_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to unreact from
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [LIKE, RETWEET]
+ *                 description: Type of reaction
+ *     responses:
+ *       200:
+ *         description: Successfully removed reaction from the post
+ *       400:
+ *         description: Invalid input
+ *       409:
+ *         description: Conflict or error unreacting to the post
+ */
 router.use('/reaction', withAuth, reactionRouter)
 
+
+/**
+ * @swagger
+ * api/comment/by_user/{user_id}:
+ *   get:
+ *     summary: Get comments by user
+ *     tags:
+ *       - Comment
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to get comments for
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved comments
+ *       400:
+ *         description: Invalid input
+ *       409:
+ *         description: Conflict or error retrieving comments
+ * 
+ * 
+ * /comments/by_post/{post_id}:
+ *   get:
+ *     summary: Get comments by post
+ *     tags:
+ *       - Comment
+ *     parameters:
+ *       - in: path
+ *         name: post_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to get comments for
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 5
+ *         description: The number of comments to return
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *         description: Cursor for comments before a specific date
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *         description: Cursor for comments after a specific date
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved comments
+ *       400:
+ *         description: Invalid input
+ *       409:
+ *         description: Conflict or error retrieving comments
+ */
 router.use('/comment', withAuth, commentRouter)
 
+/**
+ * @swagger
+ * /api/like/getAll/{user_id}:
+ *   get:
+ *     summary: Get all likes of a user
+ *     tags:
+ *       - Like
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user whose likes are to be fetched
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved likes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The ID of the like
+ *                   postId:
+ *                     type: string
+ *                     description: The ID of the post liked
+ *                   userId:
+ *                     type: string
+ *                     description: The ID of the user who liked the post
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Timestamp when the like was created
+ *       '400':
+ *         description: Invalid input
+ *       '409':
+ *         description: Conflict or error retrieving likes
+ */
 router.use('/like', withAuth, likeRouter)
 
+
+/**
+ * @swagger
+ * /api/retweet/getAll/{user_id}:
+ *   get:
+ *     summary: Get all retweets by a user
+ *     tags:
+ *       - Retweet
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user whose retweets are to be fetched
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved retweets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The ID of the retweet
+ *                   postId:
+ *                     type: string
+ *                     description: The ID of the original post being retweeted
+ *                   userId:
+ *                     type: string
+ *                     description: The ID of the user who retweeted the post
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Timestamp when the retweet was created
+ *       '400':
+ *         description: Invalid input
+ *       '409':
+ *         description: Conflict or error retrieving retweets
+ */
 router.use('/retweet', withAuth, retweetRouter)
 
+
+/**
+ * @swagger
+ * /api/aws/presigned_profile_url:
+ *   post:
+ *     summary: Generate pre-signed URL for uploading a profile picture
+ *     tags:
+ *       - AWS
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               contentType:
+ *                 type: string
+ *                 enum: [image/jpeg, image/png]
+ *                 description: Type of image content
+ *     responses:
+ *       '201':
+ *         description: Successfully generated pre-signed URL for profile picture upload
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                   description: Pre-signed URL for uploading the profile picture
+ *                 key:
+ *                   type: string
+ *                   description: Key identifier for the uploaded profile picture
+ *       '400':
+ *         description: Invalid input or content type
+ *       '500':
+ *         description: Error generating pre-signed URL for profile picture upload
+ * 
+ * /api/aws/presigned_post_url:
+ *   post:
+ *     summary: Generate pre-signed URLs for uploading post pictures
+ *     tags:
+ *       - AWS
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *                 description: Number of URLs and keys to generate
+ *               contentType:
+ *                 type: string
+ *                 enum: [image/jpeg, image/png]
+ *                 description: Type of image content
+ *     responses:
+ *       '201':
+ *         description: Successfully generated pre-signed URLs for post pictures upload
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urls:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: Pre-signed URLs for uploading post pictures
+ *                 keys:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: Key identifiers for the uploaded post pictures
+ *       '400':
+ *         description: Invalid input or content type
+ *       '500':
+ *         description: Error generating pre-signed URLs for post pictures upload
+ * 
+ * /api/aws/get:
+ *   get:
+ *     summary: Retrieve profile picture key for the authenticated user
+ *     tags:
+ *       - AWS
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '201':
+ *         description: Successfully retrieved profile picture key
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               description: Key identifier for the profile picture
+ *       '409':
+ *         description: Conflict or error retrieving profile picture key
+ * 
+ * /api/aws/get/{post_id}:
+ *   get:
+ *     summary: Retrieve keys for all images associated with a post
+ *     tags:
+ *       - AWS
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: post_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to fetch image keys for
+ *     responses:
+ *       '201':
+ *         description: Successfully retrieved keys for post images
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 description: Key identifiers for images associated with the post
+ *       '409':
+ *         description: Conflict or error retrieving post image keys
+ */
 router.use('/aws', withAuth, awsRouter)
 
+
+/**
+ * @swagger
+ * /api/chat/{user_id}:
+ *   get:
+ *     summary: Retrieve messages between authenticated user and another user
+ *     tags:
+ *       - Chat
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to retrieve messages with
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved messages
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: Unique identifier of the message
+ *                   senderId:
+ *                     type: string
+ *                     description: ID of the sender user
+ *                   receiverId:
+ *                     type: string
+ *                     description: ID of the receiver user
+ *                   content:
+ *                     type: string
+ *                     description: Content of the message
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Date and time when the message was created
+ *       '400':
+ *         description: Invalid input
+ *       '409':
+ *         description: Conflict or error retrieving messages
+ */
 router.use('/chat', withAuth, chatRoute)
 
