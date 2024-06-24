@@ -104,8 +104,8 @@ router.use('/auth', authRouter)
  * 
  * /api/user:
  *   get:
- *     summary: Get all users
- *     description: Returns recommended users paginated
+ *     summary: Get all recomended users paginated
+ *     description: Returns all public users, and private users that follows authenticated user, with pagination
  *     tags:
  *       - User  
  *     security:
@@ -162,7 +162,7 @@ router.use('/auth', authRouter)
  * /api/user/{user_id}:
  *   get:
  *     summary: Get user by ID
- *     description: Returns the user by their Id
+ *     description: Returns the user by user Id if found
  *     tags:
  *       - User
  *     security:
@@ -188,6 +188,8 @@ router.use('/auth', authRouter)
  *                   type: string
  *                 createdAt:
  *                   type: Date
+ *       400:
+ *         description: Error Bad Request. Invalid userId 
  *       401:
  *         description: Unauthorized. You must login to access this content   
  *                   
@@ -201,7 +203,7 @@ router.use('/user', withAuth, userRouter)
  * /api/post:
  *   get:
  *     summary: Get available posts
- *     description: Returns paginated posts from public users or users followed by the authenticated user
+ *     description: Returns paginated posts (and comments) from public users or users followed by the authenticated user
  *     tags:
  *       - Post
  *     security:
@@ -235,6 +237,34 @@ router.use('/user', withAuth, userRouter)
  *         description: Unauthorized. You must login to access this content 
  * 
  * 
+ *   post:
+ *     summary: Create a new post
+ *     description: Creates a new post for the authenticated user
+ *     tags:
+ *       - Post
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PostDTO'
+ *     responses:
+ *       201:
+ *         description: Post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PostDTO'
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Server Error 
+ * 
+ * 
  * /api/post/{post_id}:
  *   get: 
  *     summary: Get post by ID
@@ -265,7 +295,7 @@ router.use('/user', withAuth, userRouter)
  *         description: Server Error
  * 
  * 
- * /api/posts/by_user/{userId}:
+ * /api/post/by_user/{user_id}:
  *   get:
  *     summary: Get posts by user
  *     description: Returns all posts by a specific user, visible to the authenticated user
@@ -275,7 +305,7 @@ router.use('/user', withAuth, userRouter)
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: user_id
  *         required: true
  *         schema:
  *           type: string
@@ -289,42 +319,14 @@ router.use('/user', withAuth, userRouter)
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PostDTO'
- *       400:
- *         description: Bad Request
  *       401:
- *         description: Unauthorized
- *       500:
- *         description: User not found
+ *         description: Unauthorized. You must login to access this content
+ *       404:
+ *         description: User not Found 
  * 
  * 
- * /api/posts:
- *   post:
- *     summary: Create a new post
- *     description: Creates a new post for the authenticated user
- *     tags:
- *       - Post
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/PostDTO'
- *     responses:
- *       201:
- *         description: Post created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/PostDTO'
- *       400:
- *         description: Bad Request
- *       401:
- *         description: Unauthorized
  * 
- * 
- * /api/posts/{postId}:
+ * /api/post/{postId}:
  *   delete:
  *     summary: Delete a post
  *     description: Deletes a post by Id for the authenticated user
@@ -343,19 +345,18 @@ router.use('/user', withAuth, userRouter)
  *       200:
  *         description: Post deleted successfully
  *       400:
- *         description: Bad Request
+ *         description: Bad Request. Invalid post ID
  *       401:
- *         description: Unauthorized
- *       500:
- *         description: Post not found   
- *                  
+ *         description: Unauthorized. You must login to access this content
+ *       403:
+ *         description: Forbidden. Not allowed to perform this action
  */
 router.use('/post', withAuth, postRouter)
 
 
 /**
  * @swagger
- * /api/followers/follow/{user_id}:
+ * /api/follower/follow/{user_id}:
  *   post:
  *     summary: Follow a user
  *     description: Allows the authenticated user to follow another user
@@ -373,13 +374,13 @@ router.use('/post', withAuth, postRouter)
  *     responses:
  *       200:
  *         description: Followed user successfully
+ *       400:
+ *         description: Bad Request. Invalid user_id
  *       401:
- *         description: Unauthorized
- *       500:
- *         description: User not found
+ *         description: Unauthorized. You must login to access this content
  * 
  * 
- * /api/followers/unfollow/{user_id}:
+ * /api/follower/unfollow/{user_id}:
  *   post:
  *     summary: Unfollow a user
  *     description: Allows the authenticated user to unfollow another user
@@ -397,10 +398,10 @@ router.use('/post', withAuth, postRouter)
  *     responses:
  *       200:
  *         description: Unfollowed user successfully
+ *       400:
+ *         description: Bad Request. Invalid user_id
  *       401:
- *         description: Unauthorized
- *       500:
- *         description: User not found
+ *         description: Unauthorized. You must login to access this content
  */
 router.use('/follower', withAuth, followerRouter)
 
@@ -436,14 +437,18 @@ router.use('/follower', withAuth, followerRouter)
  *       200:
  *         description: Successfully reacted to the post
  *       400:
- *         description: Invalid input
+ *         description: Bad Request. Invalid postId
  *       409:
- *         description: Conflict or error reacting to the post
+ *         description: Conflict. Reacting to a post twice
+ *       500:
+ *         description: Error. Internal Server Error
  * 
  *   delete:
  *     summary: Remove reaction from a post
  *     tags: 
  *       - Reaction
+ *     security: 
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: post_id
@@ -466,9 +471,11 @@ router.use('/follower', withAuth, followerRouter)
  *       200:
  *         description: Successfully removed reaction from the post
  *       400:
- *         description: Invalid input
+ *         description: Bad Request. Invalid postId
  *       409:
- *         description: Conflict or error unreacting to the post
+ *         description: Conflict. Unreacting to the post twice
+ *       500:
+ *         description: Error. Internal Server Error
  */
 router.use('/reaction', withAuth, reactionRouter)
 
@@ -480,6 +487,8 @@ router.use('/reaction', withAuth, reactionRouter)
  *     summary: Get comments by user
  *     tags:
  *       - Comment
+ *     security: 
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: user_id
@@ -496,11 +505,13 @@ router.use('/reaction', withAuth, reactionRouter)
  *         description: Conflict or error retrieving comments
  * 
  * 
- * /comments/by_post/{post_id}:
+ * /comment/by_post/{post_id}:
  *   get:
  *     summary: Get comments by post
  *     tags:
  *       - Comment
+ *     security: 
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: post_id

@@ -47,7 +47,8 @@ export class PostRepositoryImpl implements PostRepository {
                     followerId: userId,
                     deletedAt: null
                   }
-                }
+                },
+                deletedAt: null
               }
             }
           ],
@@ -192,10 +193,11 @@ export class PostRepositoryImpl implements PostRepository {
               //userId follows the author
               followers: {
                 some: {
-                  id: userId,
+                  followerId: userId,
                   deletedAt: null
                 }
-              }
+              },
+              deletedAt: null
             },
             {
               //the author is public

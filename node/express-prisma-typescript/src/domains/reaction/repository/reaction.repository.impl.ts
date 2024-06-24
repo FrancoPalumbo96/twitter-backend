@@ -83,8 +83,7 @@ export class ReactionRepositoryImpl implements ReactionRepository {
 
     } catch (error) {
       throw new ValidationException([
-        { field: 'postId', message: 'Invalid postId' }, 
-        { field: 'userId', message: 'Invalid userId' }
+        { field: 'postId', message: 'Invalid postId' }
       ])
     }
   }
