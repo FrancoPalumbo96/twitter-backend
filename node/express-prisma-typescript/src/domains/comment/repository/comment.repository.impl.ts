@@ -17,6 +17,9 @@ export class CommentRepositoryImpl implements CommentRepository {
           parentId: {
             not: null
           },
+          author: {
+            deletedAt: null
+          },
           OR: [
             {
               // Author is not a private user

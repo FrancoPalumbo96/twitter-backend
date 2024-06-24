@@ -409,8 +409,8 @@ router.use('/follower', withAuth, followerRouter)
  * @swagger
  * /api/reaction/{post_id}:
  *   post:
- *     summary:
- *     description: 
+ *     summary: Add Reaction to a Post
+ *     description: Add a Reaction to a Post
  *     tags:
  *       - Reaction
  *     security: 
@@ -445,6 +445,7 @@ router.use('/follower', withAuth, followerRouter)
  * 
  *   delete:
  *     summary: Remove reaction from a post
+ *     description: Change reaction deleteAt date to Date.now()
  *     tags: 
  *       - Reaction
  *     security: 
@@ -482,9 +483,10 @@ router.use('/reaction', withAuth, reactionRouter)
 
 /**
  * @swagger
- * api/comment/by_user/{user_id}:
+ * /api/comment/by_user/{user_id}:
  *   get:
  *     summary: Get comments by user
+ *     description: Get the comments of an available user
  *     tags:
  *       - Comment
  *     security: 
@@ -500,12 +502,10 @@ router.use('/reaction', withAuth, reactionRouter)
  *       200:
  *         description: Successfully retrieved comments
  *       400:
- *         description: Invalid input
- *       409:
- *         description: Conflict or error retrieving comments
+ *         description: Bad Request. Invalid user_id
  * 
  * 
- * /comment/by_post/{post_id}:
+ * /api/comment/by_post/{post_id}:
  *   get:
  *     summary: Get comments by post
  *     tags:
@@ -538,10 +538,8 @@ router.use('/reaction', withAuth, reactionRouter)
  *     responses:
  *       200:
  *         description: Successfully retrieved comments
- *       400:
- *         description: Invalid input
  *       409:
- *         description: Conflict or error retrieving comments
+ *         description: Conflict. Invalid post_id
  */
 router.use('/comment', withAuth, commentRouter)
 
