@@ -6,12 +6,12 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "prod": "yarn db:migrate && node dist/server.js",
-    "dev": "nodemon -q",
+    "dev": "yarn db:migrate && yarn db:generate && nodemon -q",
     "lint": "eslint --fix && pretty-quick && prisma format",
     "db:migrate": "prisma migrate deploy",
     "db:make-migrations": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "seed": "ts-node src/utils/seed.ts",
+    "seed": "ts-node src/utils/random.seed.ts",
     "db:clean": "ts-node src/utils/dbcleaner.ts",
     "test": "jest",
     "test:single": "jest src/tests/chat.service.test.ts"

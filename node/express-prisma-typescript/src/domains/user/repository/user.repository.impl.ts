@@ -73,18 +73,29 @@ export class UserRepositoryImpl implements UserRepository {
         skip: options.skip, 
         //Get All users that are following userId, exept users with mutual following and the userId user
         where: {
-          follows: {
-            some: {
-              followedId: userId,
-              deletedAt: null
+          OR: [
+            {
+              //this part recommends users that follows me
+              follows: {
+                some: {
+                  followedId: userId,
+                  deletedAt: null
+                },
+              },
+              followers: {
+                none: {
+                  followerId: userId,
+                  deletedAt: null
+                }
+              },
             },
-          },
-          followers: {
-            none: {
-              followerId: userId,
+            //This pare recommends public users
+            {
+              privateUser: false,
               deletedAt: null
             }
-          },
+          ],
+          
           NOT: {
             id: userId,
           }
@@ -142,17 +153,25 @@ export class UserRepositoryImpl implements UserRepository {
               }
             },
             {
-              OR: [
-                { privateUser: false }, //Public User
-                {
-                  followers: {
-                    some: {
-                      followerId: userId, //User follows the usernamePrefix
-                      deletedAt: null
-                    }
-                  }
-                }
-              ]
+              NOT: {
+                id: userId
+              }
+            },
+            {
+              deletedAt: null,
+              // OR: [
+              //   { privateUser: false,
+              //     deletedAt: null
+              //   }, //Public User
+              //   {
+              //     followers: {
+              //       some: {
+              //         followerId: userId, //User follows the usernamePrefix
+              //         deletedAt: null
+              //       }
+              //     }
+              //   }
+              // ]
             },
           ]
         }

@@ -30,10 +30,10 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  posts     Post[]
+  posts     Post[] //One-to-many relation with Post
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
-  reactions Reaction[]
+  reactions Reaction[] 
   sentMessages Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
 }

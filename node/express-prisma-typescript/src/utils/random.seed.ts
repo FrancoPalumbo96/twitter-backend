@@ -1,4 +1,3 @@
-// seed.ts
 import { PrismaClient, ReactionType } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import bcrypt from 'bcrypt'
