@@ -131,6 +131,8 @@ router.use('/auth', authRouter)
  *                         type: Date
  *       401:
  *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
  * 
  * 
  * /api/user/me:
@@ -157,6 +159,8 @@ router.use('/auth', authRouter)
  *                   type: Date
  *       401:
  *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
  * 
  * 
  * /api/user/{user_id}:
@@ -191,7 +195,9 @@ router.use('/auth', authRouter)
  *       400:
  *         description: Error Bad Request. Invalid userId 
  *       401:
- *         description: Unauthorized. You must login to access this content   
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error    
  *                   
  */
 router.use('/user', withAuth, userRouter)
@@ -234,7 +240,9 @@ router.use('/user', withAuth, userRouter)
  *               items:
  *                 $ref: '#/components/schemas/PostDTO'
  *       401:
- *         description: Unauthorized. You must login to access this content 
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error  
  * 
  * 
  *   post:
@@ -262,7 +270,7 @@ router.use('/user', withAuth, userRouter)
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
- *         description: Server Error 
+ *         description: Internal Server Error 
  * 
  * 
  * /api/post/{post_id}:
@@ -292,7 +300,7 @@ router.use('/user', withAuth, userRouter)
  *       400:
  *         description: Error Bad Request. Invalid Post Id 
  *       500:
- *         description: Server Error
+ *         description: Internal Server Error
  * 
  * 
  * /api/post/by_user/{user_id}:
@@ -323,6 +331,8 @@ router.use('/user', withAuth, userRouter)
  *         description: Unauthorized. You must login to access this content
  *       404:
  *         description: User not Found 
+ *       500:
+ *         description: Internal Server Error 
  * 
  * 
  * 
@@ -350,6 +360,8 @@ router.use('/user', withAuth, userRouter)
  *         description: Unauthorized. You must login to access this content
  *       403:
  *         description: Forbidden. Not allowed to perform this action
+ *       500:
+ *         description: Internal Server Error 
  */
 router.use('/post', withAuth, postRouter)
 
@@ -378,6 +390,8 @@ router.use('/post', withAuth, postRouter)
  *         description: Bad Request. Invalid user_id
  *       401:
  *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
  * 
  * 
  * /api/follower/unfollow/{user_id}:
@@ -402,6 +416,8 @@ router.use('/post', withAuth, postRouter)
  *         description: Bad Request. Invalid user_id
  *       401:
  *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
  */
 router.use('/follower', withAuth, followerRouter)
 
@@ -438,10 +454,12 @@ router.use('/follower', withAuth, followerRouter)
  *         description: Successfully reacted to the post
  *       400:
  *         description: Bad Request. Invalid postId
+ *       401:
+ *         description: Unauthorized. You must login to access this content 
  *       409:
  *         description: Conflict. Reacting to a post twice
  *       500:
- *         description: Error. Internal Server Error
+ *         description: Internal Server Error
  * 
  *   delete:
  *     summary: Remove reaction from a post
@@ -473,10 +491,12 @@ router.use('/follower', withAuth, followerRouter)
  *         description: Successfully removed reaction from the post
  *       400:
  *         description: Bad Request. Invalid postId
+ *       401:
+ *         description: Unauthorized. You must login to access this content
  *       409:
  *         description: Conflict. Unreacting to the post twice
  *       500:
- *         description: Error. Internal Server Error
+ *         description: Internal Server Error
  */
 router.use('/reaction', withAuth, reactionRouter)
 
@@ -503,6 +523,10 @@ router.use('/reaction', withAuth, reactionRouter)
  *         description: Successfully retrieved comments
  *       400:
  *         description: Bad Request. Invalid user_id
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
  * 
  * 
  * /api/comment/by_post/{post_id}:
@@ -538,8 +562,12 @@ router.use('/reaction', withAuth, reactionRouter)
  *     responses:
  *       200:
  *         description: Successfully retrieved comments
+ *       401:
+ *         description: Unauthorized. You must login to access this content
  *       409:
  *         description: Conflict. Invalid post_id
+ *       500:
+ *         description: Internal Server Error 
  */
 router.use('/comment', withAuth, commentRouter)
 
@@ -560,7 +588,7 @@ router.use('/comment', withAuth, commentRouter)
  *     security:
  *       - BearerAuth: []
  *     responses:
- *       '200':
+ *       200:
  *         description: Successfully retrieved likes
  *         content:
  *           application/json:
@@ -582,10 +610,12 @@ router.use('/comment', withAuth, commentRouter)
  *                     type: string
  *                     format: date-time
  *                     description: Timestamp when the like was created
- *       '400':
- *         description: Invalid input
- *       '409':
- *         description: Conflict or error retrieving likes
+ *       400:
+ *         description: Bad Request. Invalid user_id
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error  
  */
 router.use('/like', withAuth, likeRouter)
 
@@ -607,7 +637,7 @@ router.use('/like', withAuth, likeRouter)
  *     security:
  *       - BearerAuth: []
  *     responses:
- *       '200':
+ *       200:
  *         description: Successfully retrieved retweets
  *         content:
  *           application/json:
@@ -629,10 +659,14 @@ router.use('/like', withAuth, likeRouter)
  *                     type: string
  *                     format: date-time
  *                     description: Timestamp when the retweet was created
- *       '400':
+ *       400:
  *         description: Invalid input
- *       '409':
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       409:
  *         description: Conflict or error retrieving retweets
+ *       500:
+ *         description: Internal Server Error
  */
 router.use('/retweet', withAuth, retweetRouter)
 
@@ -658,7 +692,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *                 enum: [image/jpeg, image/png]
  *                 description: Type of image content
  *     responses:
- *       '201':
+ *       201:
  *         description: Successfully generated pre-signed URL for profile picture upload
  *         content:
  *           application/json:
@@ -671,10 +705,12 @@ router.use('/retweet', withAuth, retweetRouter)
  *                 key:
  *                   type: string
  *                   description: Key identifier for the uploaded profile picture
- *       '400':
- *         description: Invalid input or content type
- *       '500':
- *         description: Error generating pre-signed URL for profile picture upload
+ *       400:
+ *         description: Bad Request. Invalid content type
+ *       401:
+ *         description: Unauthorized. You must login to access this content 
+ *       500:
+ *         description: Internal Server Error
  * 
  * /api/aws/presigned_post_url:
  *   post:
@@ -693,12 +729,13 @@ router.use('/retweet', withAuth, retweetRouter)
  *               quantity:
  *                 type: number
  *                 description: Number of URLs and keys to generate
+ *                 example: 1
  *               contentType:
  *                 type: string
  *                 enum: [image/jpeg, image/png]
  *                 description: Type of image content
  *     responses:
- *       '201':
+ *       201:
  *         description: Successfully generated pre-signed URLs for post pictures upload
  *         content:
  *           application/json:
@@ -715,10 +752,12 @@ router.use('/retweet', withAuth, retweetRouter)
  *                   items:
  *                     type: string
  *                     description: Key identifiers for the uploaded post pictures
- *       '400':
- *         description: Invalid input or content type
- *       '500':
- *         description: Error generating pre-signed URLs for post pictures upload
+ *       400:
+ *         description: Bad Request. Invalid content type or quantity
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error
  * 
  * /api/aws/get:
  *   get:
@@ -728,14 +767,14 @@ router.use('/retweet', withAuth, retweetRouter)
  *     security:
  *       - BearerAuth: []
  *     responses:
- *       '201':
+ *       201:
  *         description: Successfully retrieved profile picture key
  *         content:
  *           application/json:
  *             schema:
  *               type: string
  *               description: Key identifier for the profile picture
- *       '409':
+ *       409:
  *         description: Conflict or error retrieving profile picture key
  * 
  * /api/aws/get/{post_id}:
@@ -753,7 +792,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *           type: string
  *         description: The ID of the post to fetch image keys for
  *     responses:
- *       '201':
+ *       201:
  *         description: Successfully retrieved keys for post images
  *         content:
  *           application/json:
@@ -762,7 +801,7 @@ router.use('/retweet', withAuth, retweetRouter)
  *               items:
  *                 type: string
  *                 description: Key identifiers for images associated with the post
- *       '409':
+ *       409:
  *         description: Conflict or error retrieving post image keys
  */
 router.use('/aws', withAuth, awsRouter)
