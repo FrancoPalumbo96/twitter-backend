@@ -101,15 +101,25 @@ router.use('/auth', authRouter)
 /**
  * @swagger
  * 
- * 
  * /api/user:
  *   get:
- *     summary: Get all recomended users paginated
- *     description: Returns all public users, and private users that follows authenticated user, with pagination
+ *     summary: Get all recommended users paginated
+ *     description: Returns all public users and private users that follow the authenticated user, with pagination
  *     tags:
  *       - User  
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of users to retrieve (default 5)
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *         description: Number of users to skip (default 0)
  *     responses:
  *       200:
  *         description: Returns Users
@@ -129,6 +139,22 @@ router.use('/auth', authRouter)
  *                         type: string
  *                       createdAt:
  *                         type: Date
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
+ * 
+ * 
+ *   delete:
+ *     summary: Delete current user
+ *     description: Deletes the currently authenticated user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
@@ -166,7 +192,7 @@ router.use('/auth', authRouter)
  * /api/user/{user_id}:
  *   get:
  *     summary: Get user by ID
- *     description: Returns the user by user Id if found
+ *     description: Returns the user by user ID if found
  *     tags:
  *       - User
  *     security:
@@ -177,7 +203,7 @@ router.use('/auth', authRouter)
  *         required: true
  *         schema:
  *           type: string
- *         description: The Id of the user to retrieve 
+ *         description: The ID of the user to retrieve 
  *     responses:
  *       200:
  *         description: Returns User
@@ -198,7 +224,83 @@ router.use('/auth', authRouter)
  *         description: Unauthorized. You must login to access this content
  *       500:
  *         description: Internal Server Error    
- *                   
+ * 
+ * 
+ * /api/user/by_username/{username}:
+ *   get:
+ *     summary: Get users by username prefix
+ *     description: Returns users whose usernames start with the specified prefix
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The prefix of the username to search for
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of users to retrieve (default 5)
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *         description: Number of users to skip (default 0)
+ *     responses:
+ *       200:
+ *         description: Returns Users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   createdAt:
+ *                     type: Date
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error 
+ * 
+ * 
+ * /api/user/update_profile_picture:
+ *   post:
+ *     summary: Update profile picture
+ *     description: Updates the profile picture of the authenticated user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               key:
+ *                 type: string
+ *                 description: The key of the new profile picture
+ *     responses:
+ *       200:
+ *         description: Profile picture updated successfully
+ *       400:
+ *         description: Validation Error. Missing key in request body
+ *       401:
+ *         description: Unauthorized. You must login to access this content
+ *       500:
+ *         description: Internal Server Error
+ * 
  */
 router.use('/user', withAuth, userRouter)
 
@@ -759,50 +861,6 @@ router.use('/retweet', withAuth, retweetRouter)
  *       500:
  *         description: Internal Server Error
  * 
- * /api/aws/get:
- *   get:
- *     summary: Retrieve profile picture key for the authenticated user
- *     tags:
- *       - AWS
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       201:
- *         description: Successfully retrieved profile picture key
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- *               description: Key identifier for the profile picture
- *       409:
- *         description: Conflict or error retrieving profile picture key
- * 
- * /api/aws/get/{post_id}:
- *   get:
- *     summary: Retrieve keys for all images associated with a post
- *     tags:
- *       - AWS
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: post_id
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the post to fetch image keys for
- *     responses:
- *       201:
- *         description: Successfully retrieved keys for post images
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: string
- *                 description: Key identifiers for images associated with the post
- *       409:
- *         description: Conflict or error retrieving post image keys
  */
 router.use('/aws', withAuth, awsRouter)
 

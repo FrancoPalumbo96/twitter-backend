@@ -33,6 +33,10 @@ export class TokenDTO {
  *          type: string
  *          description: Name of the user
  *          example: Pedro
+ *        privateUser:
+ *          type: boolean
+ *          description: Is a private user
+ *          example: true
  */
 
 export class SignupInputDTO {
