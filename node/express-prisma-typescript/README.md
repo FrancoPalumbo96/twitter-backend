@@ -14,7 +14,9 @@ In this example you'll find an already setted up express server with some existi
   ```
 - Run:
   ```
-  docker compose up
+  Two options: (check that the .envrc is set correclty)
+    - npm run dev  
+    - docker compose up
   ```
 - You're ready to go!
 
