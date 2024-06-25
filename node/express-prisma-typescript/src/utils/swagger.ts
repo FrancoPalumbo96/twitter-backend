@@ -18,7 +18,8 @@ const swaggerDefinition: SwaggerDefinition = {
 const swaggerOptions: Options = {
   swaggerDefinition,
   apis: ['./src/router/index.ts', './src/domains/auth/dto/*.ts', './src/domains/post/dto/*.ts',
-    './src/domains/chat/dto/*.ts', './src/domains/reaction/dto/*.ts', './src/domains/follower/dto/*.ts'],
+    './src/domains/chat/dto/*.ts', './src/domains/reaction/dto/*.ts', './src/domains/follower/dto/*.ts',
+    './src/domains/user/dto/*.ts'],
      //To add more schemas do here
 };
 

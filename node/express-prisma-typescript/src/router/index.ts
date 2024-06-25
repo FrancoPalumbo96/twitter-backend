@@ -137,8 +137,10 @@ router.use('/auth', authRouter)
  *                         type: string
  *                       name:
  *                         type: string
- *                       createdAt:
- *                         type: Date
+ *                       username:
+ *                         type: string
+ *                       profilePicture:
+ *                         type: string
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
@@ -181,8 +183,10 @@ router.use('/auth', authRouter)
  *                   type: string
  *                 name:
  *                   type: string
- *                 createdAt:
- *                   type: Date
+ *                 username:
+ *                   type: string
+ *                 profilePicture:
+ *                   type: string
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
@@ -216,8 +220,10 @@ router.use('/auth', authRouter)
  *                   type: string
  *                 name:
  *                   type: string
- *                 createdAt:
- *                   type: Date
+ *                 username:
+ *                   type: string
+ *                 profilePicture:
+ *                   type: string
  *       400:
  *         description: Error Bad Request. Invalid userId 
  *       401:
@@ -265,8 +271,10 @@ router.use('/auth', authRouter)
  *                     type: string
  *                   name:
  *                     type: string
- *                   createdAt:
- *                     type: Date
+ *                   username:
+ *                     type: string
+ *                   profilePicture:
+ *                     type: string
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
@@ -340,7 +348,7 @@ router.use('/user', withAuth, userRouter)
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/PostDTO'
+ *                 $ref: '#/components/schemas/ExtendedPostDTO'
  *       401:
  *         description: Unauthorized. You must login to access this content
  *       500:
