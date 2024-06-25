@@ -1,6 +1,28 @@
 import { ArrayMaxSize, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 import { ExtendedUserDTO } from '@domains/user/dto'
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CreatePostInputDTO:
+ *       type: object
+ *       required:
+ *         - content
+ *       properties:
+ *         content:
+ *           type: string
+ *           description: Post content
+ *           example: I am a Post!
+ *         images:
+ *           type: string[]
+ *           description: Array of key images
+ *           example: ['testKey']
+ *         parentId:
+ *           type: string
+ *           description: The post parent id when post created is a Comment
+ *           example: c9499110-6cfe-47af-b799-20ba6873055e  
+ */
 export class CreatePostInputDTO {
   @IsString()
   @IsNotEmpty()
@@ -15,8 +37,6 @@ export class CreatePostInputDTO {
   @IsOptional()
     parentId?: string
 }
-
-//Single Parameter as an Object
 
 /**
  * @swagger

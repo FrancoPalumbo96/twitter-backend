@@ -20,7 +20,7 @@ const socketHandler = (io: SocketIOServer) => {
     //This event handler runs when a client sends a message.
     socket.on('sendMessage', async (message) => {
       const { receiverId, content } = message
-      const senderId = socket.data.user.userId; //TODO check this
+      const senderId = socket.data.user.userId; 
       
       try {
         const newMessage = await service.sendMessage(senderId, receiverId, content)

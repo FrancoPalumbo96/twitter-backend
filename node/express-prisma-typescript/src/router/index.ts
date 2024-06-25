@@ -15,10 +15,6 @@ import { chatRoute } from '@domains/chat'
 
 export const router = Router()
 
-//TODO fix bearer token
-//TODO add deletes
-//TODO test
-
 /**
  * @swagger
  * components:
@@ -367,7 +363,7 @@ router.use('/user', withAuth, userRouter)
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PostDTO'
+ *             $ref: '#/components/schemas/CreatePostInputDTO'
  *     responses:
  *       201:
  *         description: Post created successfully

@@ -9,8 +9,7 @@ export const generateAccessToken = (payload: Record<string, string | boolean | n
   // Do not use this in production, the token will last 24 hours
   // For production apps, use a 15-minute token with a refresh token stored in a HttpOnly Cookie
 
-  //TODO change to 24
-  return jwt.sign(payload, Constants.TOKEN_SECRET, { expiresIn: '240000h' })
+  return jwt.sign(payload, Constants.TOKEN_SECRET, { expiresIn: '24h' })
 }
 
 export const withAuth = (req: Request, res: Response, next: () => any): void => {
